@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "com.challenge.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"EnderDragonMixin",
+		"LivingEntityMixin",
+		"BlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
