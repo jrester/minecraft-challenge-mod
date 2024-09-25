@@ -11,9 +11,8 @@ import net.minecraft.item.Items;
 public class SlayEnderDragonChallenge extends BaseChallenge {
   private final String name = "Slay Ender Dragon";
 
-  public void start() {
-    super.start();
-
+  @Override
+  public void registerEventHandlers() {
     GameEvents.ON_ENDER_DRAGON_KILLED.register(() -> {
       if(!this.isActive()) return;
       this.challengeFinished(true);

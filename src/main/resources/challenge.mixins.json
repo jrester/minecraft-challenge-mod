@@ -5,7 +5,8 @@
 	"mixins": [
 		"EnderDragonMixin",
 		"LivingEntityMixin",
-		"BlockMixin"
+		"BlockMixin",
+		"CraftingTableBlockMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

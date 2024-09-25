@@ -3,7 +3,6 @@ package com.challenge.challenges;
 import com.challenge.events.BlockEvents;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
@@ -18,9 +17,8 @@ import net.minecraft.util.math.Vec3d;
 public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
     protected abstract Item getItem(World world, PlayerEntity player, BlockState state); 
 
-    public void start() {
-        super.start();
-
+    @Override
+    public void registerEventHandlers() {
         BlockEvents.AFTER_BLOCK_BROKEN_EVENT.register((world, player, pos, state, blockEntity, tool) -> {
             if(!isActive()) return false; 
 

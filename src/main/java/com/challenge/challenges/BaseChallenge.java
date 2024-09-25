@@ -20,8 +20,9 @@ import net.minecraft.registry.RegistryKeys;
 public abstract class BaseChallenge {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
 
-  public boolean enabled = false;
-  public boolean active = false;
+  private boolean enabled = false;
+  private boolean active = false;
+  private boolean eventHandlersRegistered = false;
   
 
   // finishedCallback and server must be set before enabling. This is not clean, but this way the challenges do not need a constructor...
@@ -48,16 +49,25 @@ public abstract class BaseChallenge {
 
   public void start() {
     if(!this.enabled) return;
+
+    if(!this.eventHandlersRegistered) {
+      this.registerEventHandlers();
+      this.eventHandlersRegistered = true;
+      LOGGER.info("Registered event handlers for " + this.getName());
+    }
+
     this.active = true;
-    LOGGER.info(String.format("Started challenge " + this.getName()));
+    LOGGER.info("Started challenge " + this.getName());
   }
 
   public void stop() {
     if(!this.enabled) return;
     this.active = false;
-    LOGGER.info(String.format("Stopped challenge " + this.getName()));
+    LOGGER.info("Stopped challenge " + this.getName());
   }
 
+  protected void registerEventHandlers() {};
+  
   public boolean isActive() {
     return this.enabled && this.active;
   }

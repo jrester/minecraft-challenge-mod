@@ -13,9 +13,8 @@ import net.minecraft.registry.entry.RegistryEntry;
 public class SlayWitherChallenge extends BaseChallenge {
   private final String name = "Slay Wither";
 
-  public void start() {
-    super.start();
-
+  @Override
+  public void registerEventHandlers() {
     ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
       if(!this.isActive()) return;
       if(!entity.getType().equals(EntityType.WITHER)) return;

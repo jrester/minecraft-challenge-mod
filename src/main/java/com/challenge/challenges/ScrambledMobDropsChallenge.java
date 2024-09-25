@@ -20,10 +20,8 @@ public class ScrambledMobDropsChallenge extends BaseChallenge {
 
   private final Scrambler<Item> itemScrambler = new Scrambler<>(Helpers.collectAllItems());
 
-  public void start() {
-    super.start();
-
-
+  @Override
+  public void registerEventHandlers() {
     LivingEntityEvents.ON_LIVING_ENTITY_LOOT_DROP.register((victim, damageSource, causedByPlayer) -> {
       if(!this.isActive()) return false;
       if(!causedByPlayer) return false;

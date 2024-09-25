@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.challenge.challenges.BaseChallenge;
 import com.challenge.challenges.HardcoreChallenge;
+import com.challenge.challenges.NoCraftingChallenge;
 import com.challenge.challenges.RandomBlockDropsChallenge;
 import com.challenge.challenges.RandomMobsOnDamageChallenge;
 import com.challenge.challenges.ScrambledMobDropsChallenge;
@@ -56,9 +57,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 	}
 
 	public void startChallenge() {
-		for(BaseChallenge challenge : this.challengeCollection.getEnabledChallenges()) {
-			challenge.start();
-		}
+		this.challengeCollection.start();
 		this.challengeTimeController.start();
 	}
 	
@@ -70,11 +69,9 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 	}
 
 	public void stopChallenge(boolean success) {
-		for(BaseChallenge challenge : this.challengeCollection.getEnabledChallenges()) {
-			challenge.stop();
-			challenge.disable();
-		}
+		this.challengeCollection.stop();
 		this.challengeTimeController.stop();
+
 		String elapsedTime = this.challengeTimeController.getElapsedTimeFormated();
 		Text message;
 		if (success) {
@@ -129,12 +126,6 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		PlayerEntity player = server.getPlayerManager().getPlayer(playerProfile.getId());
 
 		player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new ChallengeConfigManager(syncId, playerInventory, this.challengeCollection), Text.of("Challenge Config")));	
-		if(this.challengeTimeController.isRunning()) {
-			// If a challenge is active and the user modified the settings, all enabled challenges should be started
-			for(BaseChallenge challenge : this.challengeCollection.getEnabledChallenges()) {
-				challenge.start();
-			}
-		}
 		
 		return 1;
 	}
@@ -173,6 +164,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 			this.addChallenge(new RandomBlockDropsChallenge(), server);
 			this.addChallenge(new RandomMobsOnDamageChallenge(), server);
 			this.addChallenge(new ScrambledMobsOnDamageChallenge(), server);
+			this.addChallenge(new NoCraftingChallenge(), server);
 		});
 		
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

@@ -11,16 +11,17 @@ public class HardcoreChallenge extends BaseChallenge {
   private final String name = "Hardcore";
 
 
-  public void start() {
-    super.start();
-
+  @Override
+  public void registerEventHandlers() {
     ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
       if(!this.isActive()) return;
       if (!entity.isPlayer()) return;
+
       for(ServerPlayerEntity player : entity.getServer().getPlayerManager().getPlayerList()) {
         player.kill();
         player.changeGameMode(GameMode.SPECTATOR);
       }
+
       this.challengeFinished(false);
     });
   }

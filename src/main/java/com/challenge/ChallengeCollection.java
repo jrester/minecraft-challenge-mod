@@ -16,6 +16,7 @@ import net.minecraft.util.Unit;
 
 public class ChallengeCollection extends SimpleInventory {
 		private List<BaseChallenge> challenges = new LinkedList<>();
+		private boolean running = false;
 
 		public ChallengeCollection() {
 		  super(27);
@@ -46,6 +47,7 @@ public class ChallengeCollection extends SimpleInventory {
 				challenge.disable();
 			} else {
 				challenge.enable();
+				if(running) challenge.start();
 			}
 			ItemStack newItemStack = getItemStackForChallenge(this.challenges.get(slotIndex), challenge.isEnabled());
 			this.setStack(slotIndex, newItemStack);
@@ -59,5 +61,19 @@ public class ChallengeCollection extends SimpleInventory {
 				}
 			}
 			return enabledChallenges;
+		}
+
+		public void start() {
+			for(BaseChallenge challenge : this.getEnabledChallenges()) {
+				challenge.start();
+			}
+			this.running = true;
+		}
+
+		public void stop() {
+			for(BaseChallenge challenge : this.getEnabledChallenges()) {
+				challenge.stop();
+			}
+			this.running = false;
 		}
 	}

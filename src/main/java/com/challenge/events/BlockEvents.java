@@ -8,6 +8,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -25,4 +27,18 @@ public class BlockEvents {
         public boolean afterBlockBroken(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool);
     }
     
+    public static final Event<OnCraftingBlockCallback> ON_CRAFTING_BLOCK_USE =EventFactory.createArrayBacked(OnCraftingBlockCallback.class, callbacks -> (state, world, pos, player, hit) -> {
+        for(OnCraftingBlockCallback callback : callbacks) {
+            ActionResult result = callback.onCraftingBlockUse(state, world, pos, player, hit);
+            if(result != ActionResult.PASS) {
+                return result;
+            }
+        }
+        return ActionResult.PASS;
+    });
+
+    @FunctionalInterface
+    public interface OnCraftingBlockCallback {
+        public ActionResult onCraftingBlockUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit);
+    }
 }
