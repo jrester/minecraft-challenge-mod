@@ -2,10 +2,15 @@ package com.challenge.challenges;
 
 import com.challenge.events.BlockEvents;
 
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.ActionResult;
 
 public class NoCraftingChallenge extends BaseChallenge {
-    private static final String name = "No Craafting";
+    private final String name = "No Crafting";
 
     @Override
     public void registerEventHandlers() {
@@ -16,8 +21,22 @@ public class NoCraftingChallenge extends BaseChallenge {
         });
     }
 
+    @Override
     public String getName() {
-        return this.name;
+        return name;
+    }
+
+    @Override
+    public ItemStack  getIndicatorItemStack() {
+        if(isEnabled()) {
+            ItemStack itemStack = Items.CRAFTING_TABLE.getDefaultStack();
+            RegistryEntry<Enchantment> curseOfBinding = getEnchantment(Enchantments.BINDING_CURSE);
+            itemStack.addEnchantment(curseOfBinding, 1);
+            return itemStack;
+        } else {
+            return Items.CRAFTING_TABLE.getDefaultStack();
+        }
+
     }
     
 }
