@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.challenge.events.LivingEntityEvents;
 
@@ -19,4 +20,8 @@ public class LivingEntityMixin {
     if(replaced) info.cancel();
   }
   
+    //@Inject(at = @At(value = "HEAD"), method = "getVelocityMultiplier", cancellable = true)
+    //public void onGetVelocityMultiplier(CallbackInfoReturnable<Float> info) {
+    //    info.setReturnValue(10.0f);
+    //}
 }

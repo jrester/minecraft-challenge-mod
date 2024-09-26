@@ -6,9 +6,14 @@ import java.util.stream.Collectors;
 
 
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.item.Item;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffects;
 
 public class Helpers { 
     public static List<EntityType> collectAllSpawnableMobs() {
@@ -38,5 +43,23 @@ public class Helpers {
 			.filter(item -> item != null)
 			.map(Item.class::cast)
 			.collect(Collectors.toList());
+    }
+
+    public static List<StatusEffect> collectAllStatusEffects() {
+        return Arrays.asList(StatusEffects.class.getDeclaredFields())
+            .stream()
+            .map(field -> {
+                try {
+                    return field.get(null);
+                } catch(IllegalAccessException e) {
+                    return null;
+                }
+            })
+            .filter(effect -> effect != null)
+            .map(RegistryEntry.class::cast)
+            .map(entry -> entry.getKey().orElseThrow())
+            .map(RegistryKey.class::cast)
+            .map(key -> Registries.STATUS_EFFECT.get(key))
+            .collect(Collectors.toList());
     }
 }

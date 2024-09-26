@@ -4,6 +4,7 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
@@ -24,6 +25,7 @@ import com.challenge.challenges.BaseChallenge;
 import com.challenge.challenges.HardcoreChallenge;
 import com.challenge.challenges.NoCraftingChallenge;
 import com.challenge.challenges.RandomBlockDropsChallenge;
+import com.challenge.challenges.RandomMobSpeedChallenge;
 import com.challenge.challenges.RandomMobsOnDamageChallenge;
 import com.challenge.challenges.ScrambledMobDropsChallenge;
 import com.challenge.challenges.ScrambledMobsOnDamageChallenge;
@@ -165,6 +167,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 			this.addChallenge(new RandomMobsOnDamageChallenge(), server);
 			this.addChallenge(new ScrambledMobsOnDamageChallenge(), server);
 			this.addChallenge(new NoCraftingChallenge(), server);
+			this.addChallenge(new RandomMobSpeedChallenge(), server);
 		});
 		
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

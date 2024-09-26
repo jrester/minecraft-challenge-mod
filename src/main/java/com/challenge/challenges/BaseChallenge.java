@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.minecraft.registry.RegistryKey;
@@ -102,7 +103,7 @@ public abstract class BaseChallenge {
 
   /* Helper method for getting enchantments, because somehow it is not trivial... */
   protected RegistryEntry<Enchantment> getEnchantment(RegistryKey<Enchantment> enchantment) {
-      World world = this.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, Identifier.of("overworld")));
+      World world = this.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, Identifier.of("overworld"))); 
       return RegistryEntry.of(world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment));
   }
 

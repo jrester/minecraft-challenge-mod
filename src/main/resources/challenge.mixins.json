@@ -6,7 +6,9 @@
 		"EnderDragonMixin",
 		"LivingEntityMixin",
 		"BlockMixin",
-		"CraftingTableBlockMixin"
+		"CraftingTableBlockMixin",
+		"PlayerEntityMixin",
+		"ServerWorldMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
