@@ -21,7 +21,7 @@ public class DeleteBlocksOnBreak extends BaseChallenge {
 		        if(i == 0 && j == 0 && k == 0)
 			    continue;
 		        BlockPos tmpPos = pos.add(i, j, k);
-		        world.removeBlockEntity(tmpPos);
+		        world.removeBlock(tmpPos, false);
 		    }
 		}
 	    }
