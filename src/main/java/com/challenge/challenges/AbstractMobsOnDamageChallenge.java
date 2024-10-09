@@ -29,18 +29,20 @@ public abstract class AbstractMobsOnDamageChallenge extends BaseChallenge {
             ServerWorld world = (ServerWorld)entity.getWorld();
             if(entity.getType().equals(EntityType.ENDER_DRAGON) && world.getRegistryKey().equals(World.END)) return;
 
-            float health = entity.getHealth();
-            if(health - damageTaken > 0) {
-                // Only create a replacement entity, if the damage did not kill the entity
-                PlayerEntity player = (PlayerEntity)source.getAttacker();
-                EntityType replacementType = this.getMob(entity, player);
-                BlockPos entityPos = entity.getBlockPos();
-                LivingEntity replacement = (LivingEntity)replacementType.create(world, null, entityPos, SpawnReason.TRIGGERED, false, false);
-                world.spawnEntity(replacement); 
-                replacement.setHealth(health - damageTaken);
-            }
+            // If we got this far, this means that
+            // 1. The entity is alive and was not killed by the damage (this is implied by the event definition)
+            // 2. The entity can be safely replaced
 
-            entity.remove(RemovalReason.KILLED);
+            PlayerEntity player = (PlayerEntity)source.getAttacker();
+            EntityType replacementType = this.getMob(entity, player);
+            BlockPos entityPos = entity.getBlockPos();
+            LivingEntity replacement = (LivingEntity)replacementType.create(world, null, entityPos, SpawnReason.TRIGGERED, false, false);
+            world.spawnEntity(replacement); 
+            // This is the After Damage event, which means that the damage was already applied to the entity.
+            // Therefore, health of the replacement is set to the entity health, and will be automatically set to the max health of the replacement
+            // if the new health exceeds the replacements max health
+            replacement.setHealth(entity.getHealth());
+            entity.remove(RemovalReason.KILLED); 
         });
     }
 
