@@ -24,9 +24,19 @@ public class RandomMobSpeedChallenge extends BaseChallenge {
         if(entity.isPlayer()) return;
         // Only apply to mobs not e.g. dropped items
         if(!entity.isLiving()) return;
+        int pivot = random.nextInt(100);
+        double newSpeed = 0.0D;
+        if (pivot < 20) {
+            newSpeed = random.nextDouble(0.1D, 1.0D);
+        } else if (pivot >= 20 && pivot < 60) {
+            newSpeed = random.nextDouble(1.0D, 1.5D);
+        } else if (pivot >= 60 && pivot < 90) {
+            newSpeed = random.nextDouble(1.5D, 2.5D);
+        } else if (pivot >= 90) {
+            newSpeed = random.nextDouble(2.5D, 5.0D);
+        }
         LivingEntity livingEntity = (LivingEntity)entity;
-        double randomSpeed = random.nextDouble(0.0, 5.0); 
-        livingEntity.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(randomSpeed);
+        livingEntity.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(newSpeed);
        }); 
     }
 
