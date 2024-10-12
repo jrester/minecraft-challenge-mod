@@ -8,7 +8,7 @@ The mob is currently server side only. Download the packaged jar and install it 
 
 # Usage
 
-If the mob was loaded successfully, you will have the following commands available (assuming you are OP on the server):
+If the mod was loaded successfully, you will have the following commands available (assuming you are OP on the server):
 
 | command             | Description                                   | Note                                                                                         |
 |---------------------|-----------------------------------------------|----------------------------------------------------------------------------------------------|

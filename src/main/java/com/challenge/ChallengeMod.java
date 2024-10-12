@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.challenge.challenges.BaseChallenge;
 import com.challenge.challenges.HardcoreChallenge;
-import com.challenge.challenges.NoCraftingChallenge;
+import com.challenge.challenges.NoCraftingTableChallenge;
 import com.challenge.challenges.RandomBlockDropsChallenge;
 import com.challenge.challenges.RandomMobSpeedChallenge;
 import com.challenge.challenges.RandomMobsOnDamageChallenge;
@@ -166,7 +166,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 			this.addChallenge(new RandomBlockDropsChallenge(), server);
 			this.addChallenge(new RandomMobsOnDamageChallenge(), server);
 			this.addChallenge(new ScrambledMobsOnDamageChallenge(), server);
-			this.addChallenge(new NoCraftingChallenge(), server);
+			this.addChallenge(new NoCraftingTableChallenge(), server);
 			this.addChallenge(new RandomMobSpeedChallenge(), server);
 			this.addChallenge(new DeleteBlocksOnBreak(), server);
 		});

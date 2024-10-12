@@ -9,8 +9,8 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.ActionResult;
 
-public class NoCraftingChallenge extends BaseChallenge {
-    private final String name = "No Crafting";
+public class NoCraftingTableChallenge extends BaseChallenge {
+    private final String name = "No Crafting Table";
 
     @Override
     public void registerEventHandlers() {
