@@ -1,30 +1,17 @@
 package com.challenge.utils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-
-import com.challenge.utils.Helpers.ItemCategory;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 
-public class Scrambler<T> {
-    private final Map<ItemCategory, List<T>> allItems;
+public class ItemScrambler {
     private Random random = new Random();
     private Map<String, Number> playerModifiers = new HashMap<>();
-
-    public Scrambler(List<T> allItems) {
-        this.allItems = new HashMap<ItemCategory, List<T>>();
-        this.allItems.put(ItemCategory.GENERAL, allItems);
-    }
-
-    public Scrambler(Map<ItemCategory, List<T>> allItems) {
-        this.allItems = allItems;
-    }
-
-    public T getScrambledForPlayer(int itemModifier, PlayerEntity player) {
+    
+    public Item getScrambledForPlayer(int itemModifier, PlayerEntity player) {
         String uuid = player.getUuidAsString();
         int modifier;
         if(!playerModifiers.containsKey(uuid)) {

@@ -16,7 +16,7 @@ import com.challenge.events.BlockEvents;
 public class ScrambledBlockDropsChallenge extends AbstractBlockDropsChallenge {
     private final String name = "Scrambled Block Drops";
 
-    private final Scrambler<Item> itemScrambler = new Scrambler<>(Helpers.collectAllItems());
+    private final Scrambler<Item> itemScrambler = new Scrambler<>(Helpers.collectCanonicalItems());
 
     @Override
     protected Item getItem(World world, PlayerEntity player, BlockState state) {

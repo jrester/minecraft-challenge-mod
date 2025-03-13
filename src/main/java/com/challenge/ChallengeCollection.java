@@ -19,7 +19,7 @@ public class ChallengeCollection extends SimpleInventory {
 		private boolean running = false;
 
 		public ChallengeCollection() {
-		  super(27);
+		  super(36);
 		}
 
 		public void addChallenge(BaseChallenge challenge) {
