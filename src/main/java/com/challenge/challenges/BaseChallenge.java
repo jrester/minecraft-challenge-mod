@@ -7,16 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import com.challenge.ChallengeMod;
 
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 
 public abstract class BaseChallenge {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
@@ -99,12 +92,6 @@ public abstract class BaseChallenge {
   
   protected void challengeFinished(boolean success) {
     this.finishedCallback.accept(this, success);
-  }
-
-  /* Helper method for getting enchantments, because somehow it is not trivial... */
-  protected RegistryEntry<Enchantment> getEnchantment(RegistryKey<Enchantment> enchantment) {
-      World world = this.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, Identifier.of("overworld"))); 
-      return RegistryEntry.of(world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment));
   }
 
   public abstract String getName();

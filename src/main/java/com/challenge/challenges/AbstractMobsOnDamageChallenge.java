@@ -1,5 +1,7 @@
 package com.challenge.challenges;
 
+import com.challenge.utils.Helpers;
+
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -50,7 +52,7 @@ public abstract class AbstractMobsOnDamageChallenge extends BaseChallenge {
     public ItemStack getIndicatorItemStack() {
         if(isEnabled()) {
             ItemStack itemStack = Items.SPAWNER.getDefaultStack();
-            RegistryEntry<Enchantment> fortune = getEnchantment(Enchantments.FORTUNE);
+            RegistryEntry<Enchantment> fortune = Helpers.getEnchantment(this.getServer(), Enchantments.FORTUNE);
             itemStack.addEnchantment(fortune, 3);
             return itemStack;
         } else {

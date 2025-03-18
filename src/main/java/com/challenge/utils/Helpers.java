@@ -1,40 +1,29 @@
 package com.challenge.utils;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import net.minecraft.item.Item;
+import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 
 public class Helpers { 
-    public enum ItemCategory {
-        GENERAL(0.7), 
-        POTTERY_SHERD(0.1), 
-        BANNER_PATTERN(0.1), 
-        SMITHING_TEMPLATE(0.05), 
-        ENCHANTED_BOOK(0.05);
-
-        private double probability;
-
-        ItemCategory(double probability) {
-            this.probability = probability;
-        }
-
-        public double getProbability() {
-            return this.probability;
-        }
-
+    public static List<Block> collectAllBlocks() {
+        return Registries.BLOCK.stream().collect(Collectors.toList());
     }
 
     public static List<EntityType> collectAllSpawnableMobs() {
@@ -54,40 +43,9 @@ public class Helpers {
     }
  
     public static List<Item> collectAllItems() {
-        return Arrays.asList(Items.class.getDeclaredFields())
-    			.stream()
-    			.map(field -> { try {
-                    return field.get(null); 
-                } catch(IllegalAccessException e) {
-                    return null;
-                }})
-    			.filter(item -> item != null)
-    			.map(Item.class::cast)
-    			.collect(Collectors.toList());
+        return Registries.ITEM.stream().collect(Collectors.toList());
     }
 
-    public static HashMap<ItemCategory, List<Item>> collectCanonicalItems() {
-        final List<Item> allItems = Helpers.collectAllItems();
-        HashMap<ItemCategory, List<Item>> canonicalItems = new HashMap<>();
-
-        for(ItemCategory itemCategory : ItemCategory.values()) {
-            canonicalItems.put(itemCategory, new LinkedList<>());
-        }
-
-        for(Item item : allItems) {
-            if(item.getName().toString().endsWith("smithing_templae")) {
-                canonicalItems.get(ItemCategory.SMITHING_TEMPLATE).add(item);
-            } else if (item.getName().toString().endsWith("pottery_sherd")) {
-                canonicalItems.get(ItemCategory.POTTERY_SHERD).add(item);
-            } else if (item == Items.ENCHANTED_BOOK) {
-                canonicalItems.get(ItemCategory.ENCHANTED_BOOK).add(item);
-            } else {
-                canonicalItems.get(ItemCategory.GENERAL).add(item);
-            }
-        }
-
-        return canonicalItems;
-    }
 
     public static List<StatusEffect> collectAllStatusEffects() {
         return Arrays.asList(StatusEffects.class.getDeclaredFields())
@@ -106,4 +64,23 @@ public class Helpers {
             .map(key -> Registries.STATUS_EFFECT.get(key))
             .collect(Collectors.toList());
     }
+
+  /* Helper method for getting enchantments, because somehow it is not trivial... */
+  public static RegistryEntry<Enchantment> getEnchantment(MinecraftServer server, RegistryKey<Enchantment> enchantment) {
+      World world = server.getWorld(RegistryKey.of(RegistryKeys.WORLD, Identifier.of("overworld"))); 
+      return RegistryEntry.of(world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment));
+  }
+
+      public static List<RegistryKey<Enchantment>> collectAllEnchantments() {
+      return Arrays.asList(Enchantments.class.getDeclaredFields())
+          .stream()
+    			.map(field -> { try {
+                    return field.get(null); 
+                } catch(IllegalAccessException e) {
+                    return null;
+                }})
+    			.filter(item -> item != null)
+    			.map(e -> (RegistryKey<Enchantment>) e)
+    			.collect(Collectors.toList());
+  }
 }

@@ -1,6 +1,7 @@
 package com.challenge.challenges;
 
 import com.challenge.events.BlockEvents;
+import com.challenge.utils.Helpers;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -30,7 +31,7 @@ public class NoCraftingTableChallenge extends BaseChallenge {
     public ItemStack  getIndicatorItemStack() {
         if(isEnabled()) {
             ItemStack itemStack = Items.CRAFTING_TABLE.getDefaultStack();
-            RegistryEntry<Enchantment> curseOfBinding = getEnchantment(Enchantments.BINDING_CURSE);
+            RegistryEntry<Enchantment> curseOfBinding = Helpers.getEnchantment(this.getServer(), Enchantments.BINDING_CURSE);
             itemStack.addEnchantment(curseOfBinding, 1);
             return itemStack;
         } else {

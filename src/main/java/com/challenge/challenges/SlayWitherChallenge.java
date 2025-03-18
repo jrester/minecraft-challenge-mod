@@ -2,6 +2,8 @@ package com.challenge.challenges;
 
 
 
+import com.challenge.utils.Helpers;
+
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -31,7 +33,7 @@ public class SlayWitherChallenge extends BaseChallenge {
   public ItemStack getIndicatorItemStack() {
     if(this.isEnabled()) {
       ItemStack itemStack = Items.NETHER_STAR.getDefaultStack();
-      RegistryEntry<Enchantment> fortune = getEnchantment(Enchantments.POWER);
+      RegistryEntry<Enchantment> fortune = Helpers.getEnchantment(this.getServer(), Enchantments.POWER);
       itemStack.addEnchantment(fortune, 3);
       return itemStack;
     } else {

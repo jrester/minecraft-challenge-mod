@@ -3,6 +3,7 @@ package com.challenge.challenges;
 import java.util.Random;
 
 import com.challenge.events.WorldEvents;
+import com.challenge.utils.Helpers;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -44,7 +45,7 @@ public class RandomMobSpeedChallenge extends BaseChallenge {
     public ItemStack getIndicatorItemStack() {
         if(isEnabled()) {
             ItemStack itemStack = Items.NETHERITE_BOOTS.getDefaultStack();
-            RegistryEntry<Enchantment> enchantment = getEnchantment(Enchantments.SOUL_SPEED);
+            RegistryEntry<Enchantment> enchantment = Helpers.getEnchantment(this.getServer(), Enchantments.SOUL_SPEED);
             itemStack.addEnchantment(enchantment, 1);
             return itemStack;
         } else {

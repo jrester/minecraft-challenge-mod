@@ -3,22 +3,19 @@ package com.challenge.challenges;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import com.challenge.utils.Helpers;
-import com.challenge.utils.Scrambler;
+import com.challenge.utils.ItemScrambler;
 
 public class ScrambledMobDropsChallenge extends AbstractMobDropsChallenge {
   private final String name = "Scrambled Mob Drops ";
-
-  private final Scrambler<Item> itemScrambler = new Scrambler<>(Helpers.collectAllItems());
+  private final ItemScrambler itemScrambler = new ItemScrambler();
 
   @Override
-  protected Item getItem(World world, PlayerEntity player, LivingEntity victim) {
+  protected ItemStack getItem(World world, PlayerEntity player, LivingEntity victim) {
       int victimTypeHash = Math.abs(victim.getType().hashCode());
-      return this.itemScrambler.getScrambledForPlayer(victimTypeHash, player);
+      return this.itemScrambler.getScrambledForPlayer(victimTypeHash, player, this.getServer());
   }
 
 

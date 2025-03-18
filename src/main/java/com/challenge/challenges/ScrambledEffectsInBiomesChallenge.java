@@ -13,7 +13,6 @@ import net.minecraft.world.biome.source.BiomeAccess;
 public class ScrambledEffectsInBiomesChallenge extends BaseChallenge {
     private final String name = "Scrambled Effects in Bioms";
 
-    private final Scrambler<StatusEffect> statusEffectScrambler = new Scrambler<>(Helpers.collectAllStatusEffects());
 
 
     @Override
@@ -22,7 +21,7 @@ public class ScrambledEffectsInBiomesChallenge extends BaseChallenge {
             if(!this.isActive()) return;
             RegistryEntry<Biome> biomeEntry = player.getWorld().getBiome(player.getBlockPos());
             int biomeModifier = Math.abs(biomeEntry.getKey().hashCode());
-            StatusEffect statusEffect = this.statusEffectScrambler.getScrambledForPlayer(biomeModifier, player);
+            // StatusEffect statusEffect = this.statusEffectScrambler.getScrambledForPlayer(biomeModifier, player);
             
             
         });

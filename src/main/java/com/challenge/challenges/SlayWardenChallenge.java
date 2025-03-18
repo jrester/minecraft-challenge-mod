@@ -1,5 +1,7 @@
 package com.challenge.challenges;
 
+import com.challenge.utils.Helpers;
+
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -32,7 +34,8 @@ public class SlayWardenChallenge extends BaseChallenge {
     public ItemStack getIndicatorItemStack() {
         if (this.isEnabled()) {
             ItemStack itemStack = Items.SCULK_SHRIEKER.getDefaultStack();
-            RegistryEntry<Enchantment> power = getEnchantment(
+            RegistryEntry<Enchantment> power = Helpers.getEnchantment(
+                this.getServer(),
                 Enchantments.POWER
             );
             itemStack.addEnchantment(power, 3);

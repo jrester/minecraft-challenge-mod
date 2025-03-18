@@ -1,6 +1,7 @@
 package com.challenge.challenges;
 
 import com.challenge.events.BlockEvents;
+import com.challenge.utils.Helpers;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,15 +16,13 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
-    protected abstract Item getItem(World world, PlayerEntity player, BlockState state); 
+    protected abstract ItemStack getItem(World world, PlayerEntity player, BlockState state); 
 
     @Override
     public void registerEventHandlers() {
         BlockEvents.AFTER_BLOCK_BROKEN_EVENT.register((world, player, pos, state, blockEntity, tool) -> {
             if(!isActive()) return false; 
-
-            Item item = this.getItem(world, player, state);
-            ItemStack itemStack = new ItemStack(item);
+            ItemStack itemStack = this.getItem(world, player, state);
             // Make sure to spawn the item at the canter of the original block, because otherwise it will glitch into the blocks around
             Vec3d blockCenterPos = pos.toCenterPos();
             ItemEntity itemEntity = new ItemEntity(world, blockCenterPos.getX(), blockCenterPos.getY(), blockCenterPos.getZ(), itemStack);
@@ -37,7 +36,7 @@ public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
     public ItemStack getIndicatorItemStack() {
         if(this.isEnabled()) {
             ItemStack itemStack = Items.NETHERITE_PICKAXE.getDefaultStack();
-            RegistryEntry<Enchantment> fortune = getEnchantment(Enchantments.FORTUNE);
+            RegistryEntry<Enchantment> fortune = Helpers.getEnchantment(this.getServer(), Enchantments.FORTUNE);
             itemStack.addEnchantment(fortune, 3);
             return itemStack;
         } else {

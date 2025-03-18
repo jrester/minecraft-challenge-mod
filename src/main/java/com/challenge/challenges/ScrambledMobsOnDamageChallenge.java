@@ -1,7 +1,7 @@
 package com.challenge.challenges;
 
 import com.challenge.utils.Helpers;
-import com.challenge.utils.Scrambler;
+import com.challenge.utils.MobScrambler;
 
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,13 +15,12 @@ import net.minecraft.entity.LivingEntity;
 
 public class ScrambledMobsOnDamageChallenge extends AbstractMobsOnDamageChallenge {
     private final String name = "Scrambled Mobs on Damage";
-
-    private final Scrambler<EntityType> mobScrambler = new Scrambler<>(Helpers.collectAllSpawnableMobs());
+    private final MobScrambler mobScrambler = new MobScrambler();
 
     @Override
     protected EntityType getMob(LivingEntity victim, PlayerEntity player) {
         int victimTypeHash = Math.abs(victim.getType().hashCode());
-        return this.mobScrambler.getScrambledForPlayer(victimTypeHash, player);
+        return this.mobScrambler.getScrambledForPlayer(victimTypeHash, player, this.getServer());
     }
     
     @Override
@@ -33,7 +32,7 @@ public class ScrambledMobsOnDamageChallenge extends AbstractMobsOnDamageChalleng
     public ItemStack getIndicatorItemStack() {
         if(isEnabled()) {
             ItemStack itemStack = Items.SPAWNER.getDefaultStack();
-            RegistryEntry<Enchantment> fortune = getEnchantment(Enchantments.FORTUNE);
+            RegistryEntry<Enchantment> fortune = Helpers.getEnchantment(this.getServer(), Enchantments.FORTUNE);
             itemStack.addEnchantment(fortune, 3);
             return itemStack;
         } else {

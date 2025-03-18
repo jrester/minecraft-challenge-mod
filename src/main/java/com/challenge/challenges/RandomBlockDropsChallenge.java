@@ -7,6 +7,7 @@ import com.challenge.utils.Randomizer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class RandomBlockDropsChallenge extends AbstractBlockDropsChallenge {
@@ -21,7 +22,7 @@ public class RandomBlockDropsChallenge extends AbstractBlockDropsChallenge {
     }
 
     @Override
-    protected Item getItem(World world, PlayerEntity player, BlockState state) {
-        return itemRandomizer.getRandom();
+    protected ItemStack getItem(World world, PlayerEntity player, BlockState state) {
+        return new ItemStack(itemRandomizer.getRandom());
     }
 }
