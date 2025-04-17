@@ -24,6 +24,7 @@ public abstract class AbstractMobDropsChallenge extends BaseChallenge {
     LivingEntityEvents.ON_LIVING_ENTITY_LOOT_DROP.register((victim, damageSource, causedByPlayer) -> {
       if(!this.isActive()) return false;
       if(!causedByPlayer) return false;
+      // TODO: fix cases where causedByPlayer is True but damageSource is not a player!
       PlayerEntity player = (PlayerEntity) damageSource.getAttacker();
       if(player == null) return false;
 

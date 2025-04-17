@@ -36,7 +36,7 @@ public class ChallengeCollection extends SimpleInventory {
 			} else {
 				name.setStyle(Style.EMPTY.withColor(TextColor.parse("red").getOrThrow()).withBold(false));	
 		  	}	
-			newItemStack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+			// newItemStack.set(DataComponentTypes.TOOLTIP_DISPLAY, Unit.INSTANCE);
 			newItemStack.set(DataComponentTypes.ITEM_NAME, name);
 			return newItemStack;
 		}

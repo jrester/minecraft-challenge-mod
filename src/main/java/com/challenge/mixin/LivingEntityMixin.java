@@ -4,24 +4,20 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.challenge.events.LivingEntityEvents;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
   @Inject(at = @At(value = "HEAD"), method = "dropLoot", cancellable = true)
-  public void onDropLoot(DamageSource damageSource, boolean causedByPlayer, CallbackInfo info) {
+  public void onDropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer, CallbackInfo info) {
     LivingEntity victim = (LivingEntity)(Object)this;
     boolean replaced = LivingEntityEvents.ON_LIVING_ENTITY_LOOT_DROP.invoker().onLivingEntityLootDrop(victim, damageSource, causedByPlayer);
     if(replaced) info.cancel();
   }
   
-    //@Inject(at = @At(value = "HEAD"), method = "getVelocityMultiplier", cancellable = true)
-    //public void onGetVelocityMultiplier(CallbackInfoReturnable<Float> info) {
-    //    info.setReturnValue(10.0f);
-    //}
 }

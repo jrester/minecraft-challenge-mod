@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -19,11 +18,11 @@ import net.minecraft.server.MinecraftServer;
 public class ItemScrambler extends Scrambler<ItemStack> {
     public enum ItemCategory {
         GENERAL(0.85), 
-        ENCHANTED_BOOK(0.05),
         POTTERY_SHERD(0.025), 
         BANNER_PATTERN(0.025), 
-        COPPER_SHIT(0.025),
-        SMITHING_TEMPLATE(0.025);
+        COPPER(0.025),
+        SMITHING_TEMPLATE(0.025),
+        ENCHANTED_BOOK(0.00);
 
         private double probability;
 
@@ -59,7 +58,7 @@ public class ItemScrambler extends Scrambler<ItemStack> {
             } else if (item == Items.ENCHANTED_BOOK) {
                 canonicalItems.get(ItemCategory.ENCHANTED_BOOK).add(item);
             } else if (item.getName().toString().contains("copper")) {
-                canonicalItems.get(ItemCategory.COPPER_SHIT).add(item);
+                canonicalItems.get(ItemCategory.COPPER).add(item);
             } else {
                 canonicalItems.get(ItemCategory.GENERAL).add(item);
             }
@@ -101,6 +100,8 @@ public class ItemScrambler extends Scrambler<ItemStack> {
             } else {
                 enchantmentLevel = (totalModifier % (enchantment.value().getMaxLevel() - 1)) + 1;
             }
+            System.out.println("Selected enchanted book with enchantment " + enchantment.value().toString() + " at level " + enchantmentLevel);
+
             itemStack.addEnchantment(enchantment, enchantmentLevel);
             return itemStack;
         }

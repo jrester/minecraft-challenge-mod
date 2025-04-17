@@ -37,7 +37,7 @@ public class RandomMobSpeedChallenge extends BaseChallenge {
             newSpeed = random.nextDouble(2.5D, 5.0D);
         }
         LivingEntity livingEntity = (LivingEntity)entity;
-        livingEntity.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(newSpeed);
+        livingEntity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(newSpeed);
        }); 
     }
 

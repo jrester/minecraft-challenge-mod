@@ -4,15 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-import net.minecraft.item.Item;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -20,6 +11,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
 public class Helpers { 
     public static List<Block> collectAllBlocks() {
@@ -29,6 +28,7 @@ public class Helpers {
     public static List<EntityType> collectAllSpawnableMobs() {
         return Arrays.asList(EntityType.class.getDeclaredFields())
             .stream()
+            .filter(field -> field.getType() == EntityType.class)
             .map(field -> {
                 try {
                     return field.get(null);
@@ -68,7 +68,7 @@ public class Helpers {
   /* Helper method for getting enchantments, because somehow it is not trivial... */
   public static RegistryEntry<Enchantment> getEnchantment(MinecraftServer server, RegistryKey<Enchantment> enchantment) {
       World world = server.getWorld(RegistryKey.of(RegistryKeys.WORLD, Identifier.of("overworld"))); 
-      return RegistryEntry.of(world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).get(enchantment));
+      return RegistryEntry.of(world.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).get(enchantment));
   }
 
       public static List<RegistryKey<Enchantment>> collectAllEnchantments() {
