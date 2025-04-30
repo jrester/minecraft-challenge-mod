@@ -4,9 +4,8 @@ package com.challenge.challenges;
 import com.challenge.events.LivingEntityEvents;
 import com.challenge.utils.Helpers;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -22,18 +21,32 @@ public abstract class AbstractMobDropsChallenge extends BaseChallenge {
   @Override
   public void registerEventHandlers() {
     LivingEntityEvents.ON_LIVING_ENTITY_LOOT_DROP.register((victim, damageSource, causedByPlayer) -> {
-      if(!this.isActive()) return false;
-      if(!causedByPlayer) return false;
-      // TODO: fix cases where causedByPlayer is True but damageSource is not a player!
-      PlayerEntity player = (PlayerEntity) damageSource.getAttacker();
-      if(player == null) return false;
+      try{
+        if(!this.isActive()) return false;
+        if(!causedByPlayer) return false;
+        Entity attacker = damageSource.getAttacker();
+        if(attacker == null) return false;
+        // Even though causedByPlayer is true, it might not always be the case that the damageSource is also a player...
+        // Probably happens in some cases, when e.g. creepers blow up other mobs.
+        if(!attacker.isPlayer()) return false;
+        // Just to be extra sure...
+        if(!(attacker instanceof PlayerEntity)) return false;
 
-      ItemStack itemStack = this.getItem(player.getWorld(), player, victim);
-      ItemEntity itemEntity = new ItemEntity(victim.getWorld(), victim.getX(), victim.getY(), victim.getZ(), itemStack);
-      itemEntity.setToDefaultPickupDelay();
-      victim.getWorld().spawnEntity(itemEntity);
+        PlayerEntity player = (PlayerEntity) attacker;
 
-      return true;
+        ItemStack itemStack = this.getItem(player.getWorld(), player, victim);
+        ItemEntity itemEntity = new ItemEntity(victim.getWorld(), victim.getX(), victim.getY(), victim.getZ(), itemStack);
+        itemEntity.setToDefaultPickupDelay();
+        victim.getWorld().spawnEntity(itemEntity);
+
+        // Event is fully processed. Don't drop default item.
+        // TODO: This means, that we cannot have two instances of the this challenge running.
+        return true;
+    } catch(Exception e) {
+      LOGGER.error("Exception occured while trying to replace mob drop for {}: {}", victim.toString(), e);
+      // The mob was most probably not killed by a player, so continue to default mob drop.
+      return false;
+    }
     });
   }
 

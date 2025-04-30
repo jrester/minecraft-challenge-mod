@@ -5,7 +5,6 @@ import com.challenge.utils.Helpers;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -21,14 +20,19 @@ public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
     @Override
     public void registerEventHandlers() {
         BlockEvents.AFTER_BLOCK_BROKEN_EVENT.register((world, player, pos, state, blockEntity, tool) -> {
-            if(!isActive()) return false; 
-            ItemStack itemStack = this.getItem(world, player, state);
-            // Make sure to spawn the item at the canter of the original block, because otherwise it will glitch into the blocks around
-            Vec3d blockCenterPos = pos.toCenterPos();
-            ItemEntity itemEntity = new ItemEntity(world, blockCenterPos.getX(), blockCenterPos.getY(), blockCenterPos.getZ(), itemStack);
-            itemEntity.setToDefaultPickupDelay();
-            world.spawnEntity(itemEntity); 
-            return true;
+            try{
+                if(!isActive()) return false; 
+                ItemStack itemStack = this.getItem(world, player, state);
+                // Make sure to spawn the item at the canter of the original block, because otherwise it will glitch into the blocks around
+                Vec3d blockCenterPos = pos.toCenterPos();
+                ItemEntity itemEntity = new ItemEntity(world, blockCenterPos.getX(), blockCenterPos.getY(), blockCenterPos.getZ(), itemStack);
+                itemEntity.setToDefaultPickupDelay();
+                world.spawnEntity(itemEntity); 
+                return true;
+            } catch(Exception e) {
+              LOGGER.error("Exception occured while trying to replace block drop for {}: {}", blockEntity.toString(), e);
+              return false;   
+            }
         });
     }
 
