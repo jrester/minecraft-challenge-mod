@@ -34,6 +34,7 @@ import com.challenge.challenges.SlayEnderDragonChallenge;
 import com.challenge.challenges.SlayWardenChallenge;
 import com.challenge.challenges.SlayWitherChallenge;
 import com.challenge.challenges.DeleteBlocksOnBreak;
+import com.challenge.challenges.DestroySameBlockChallenge;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 
@@ -173,6 +174,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 			this.addChallenge(new NoCraftingTableChallenge(), server);
 			this.addChallenge(new RandomMobSpeedChallenge(), server);
 			this.addChallenge(new DeleteBlocksOnBreak(), server);
+			this.addChallenge(new DestroySameBlockChallenge(), server);
 		});
 		
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

@@ -52,15 +52,22 @@ public abstract class BaseChallenge {
 
     this.active = true;
     LOGGER.info("Started challenge " + this.getName());
+
+    this.onPostStart();
   }
 
   public void stop() {
     if(!this.enabled) return;
+
+    this.onPreStop();
+   
     this.active = false;
     LOGGER.info("Stopped challenge " + this.getName());
   }
 
-  protected void registerEventHandlers() {};
+  protected void onPostStart() {}
+  protected void registerEventHandlers() {}
+  protected void onPreStop() {}
   
   public boolean isActive() {
     return this.enabled && this.active;
