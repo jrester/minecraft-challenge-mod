@@ -18,7 +18,7 @@ public class HardcoreChallenge extends BaseChallenge {
       if (!entity.isPlayer()) return;
 
       for(ServerPlayerEntity player : entity.getServer().getPlayerManager().getPlayerList()) {
-        player.kill(player.getServerWorld());
+        player.kill(player.getWorld());
         player.changeGameMode(GameMode.SPECTATOR);
       }
 
