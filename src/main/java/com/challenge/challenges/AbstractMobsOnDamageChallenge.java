@@ -29,7 +29,7 @@ public abstract class AbstractMobsOnDamageChallenge extends BaseChallenge {
                 if(source.getAttacker() == null) return;
                 if (!source.getAttacker().isPlayer()) return;
                 // Do not change ender dragon in the end
-                ServerWorld world = (ServerWorld)entity.getWorld();
+                ServerWorld world = (ServerWorld)entity.getEntityWorld();
                 if(entity.getType().equals(EntityType.ENDER_DRAGON) && world.getRegistryKey().equals(World.END)) return;
 
                 // If we got this far, this means that

@@ -125,9 +125,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 
 	public int configChallengeCommand(CommandContext<ServerCommandSource> ctx) {
 		ServerCommandSource source = ctx.getSource();
-		GameProfile playerProfile = source.getPlayer().getGameProfile();
-		MinecraftServer server = source.getServer();
-		PlayerEntity player = server.getPlayerManager().getPlayer(playerProfile.getId());
+		ServerPlayerEntity player= source.getPlayer();
 
 		player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new ChallengeConfigManager(syncId, playerInventory, this.challengeCollection), Text.of("Challenge Config")));	
 		

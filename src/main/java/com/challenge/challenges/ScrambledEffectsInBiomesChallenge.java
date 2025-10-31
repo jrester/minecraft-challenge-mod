@@ -19,7 +19,7 @@ public class ScrambledEffectsInBiomesChallenge extends BaseChallenge {
     public void registerEventHandlers() {
         PlayerEvents.AFTER_PLAYER_TRAVEL.register((player, movementInput) -> {
             if(!this.isActive()) return;
-            RegistryEntry<Biome> biomeEntry = player.getWorld().getBiome(player.getBlockPos());
+            RegistryEntry<Biome> biomeEntry = player.getEntityWorld().getBiome(player.getBlockPos());
             int biomeModifier = Math.abs(biomeEntry.getKey().hashCode());
             // StatusEffect statusEffect = this.statusEffectScrambler.getScrambledForPlayer(biomeModifier, player);
             

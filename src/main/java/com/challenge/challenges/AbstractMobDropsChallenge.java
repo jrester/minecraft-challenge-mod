@@ -34,10 +34,10 @@ public abstract class AbstractMobDropsChallenge extends BaseChallenge {
 
         PlayerEntity player = (PlayerEntity) attacker;
 
-        ItemStack itemStack = this.getItem(player.getWorld(), player, victim);
-        ItemEntity itemEntity = new ItemEntity(victim.getWorld(), victim.getX(), victim.getY(), victim.getZ(), itemStack);
+        ItemStack itemStack = this.getItem(player.getEntityWorld(), player, victim);
+        ItemEntity itemEntity = new ItemEntity(victim.getEntityWorld(), victim.getX(), victim.getY(), victim.getZ(), itemStack);
         itemEntity.setToDefaultPickupDelay();
-        victim.getWorld().spawnEntity(itemEntity);
+        victim.getEntityWorld().spawnEntity(itemEntity);
 
         // Event is fully processed. Don't drop default item.
         // TODO: This means, that we cannot have two instances of the this challenge running.
