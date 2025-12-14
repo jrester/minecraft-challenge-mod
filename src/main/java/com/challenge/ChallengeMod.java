@@ -4,6 +4,7 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
@@ -176,7 +177,6 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(
 				CommandManager.literal("challenge")
-					.requires(source -> source.hasPermissionLevel(4))
 					.then(CommandManager.literal("config").executes(this::configChallengeCommand))
 					.then(CommandManager.literal("start").executes(this::startChallengeCommand))
 					.then(CommandManager.literal("stop").executes(this::stopChallengeCommand))
