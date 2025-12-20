@@ -19,9 +19,9 @@ public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
 
     @Override
     public void registerEventHandlers() {
-        BlockEvents.AFTER_BLOCK_BROKEN_EVENT.register((world, player, pos, state, blockEntity, tool) -> {
+        BlockEvents.AFTER_BLOCK_BROKEN_EVENT.register((world, player, pos, state, blockEntity, tool, isBlockReplaced) -> {
             try{
-                if(!isActive()) return false; 
+                if(!isActive() || isBlockReplaced) return false; 
                 ItemStack itemStack = this.getItem(world, player, state);
                 // Make sure to spawn the item at the canter of the original block, because otherwise it will glitch into the blocks around
                 Vec3d blockCenterPos = pos.toCenterPos();

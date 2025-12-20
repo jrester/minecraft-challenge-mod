@@ -14,17 +14,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockEvents {
-    public static final Event<AfterBlockBrokenCallback> AFTER_BLOCK_BROKEN_EVENT = EventFactory.createArrayBacked(AfterBlockBrokenCallback.class, callbacks -> (world, player, pos, state, blockEntity, tool) -> {
+    public static final Event<AfterBlockBrokenCallback> AFTER_BLOCK_BROKEN_EVENT = EventFactory.createArrayBacked(AfterBlockBrokenCallback.class, callbacks -> (world, player, pos, state, blockEntity, tool, isBlockReplaced) -> {
         boolean replaced = false;
         for (AfterBlockBrokenCallback callback : callbacks) {
-           replaced |= callback.afterBlockBroken(world, player, pos, state, blockEntity, tool); 
+           replaced |= callback.afterBlockBroken(world, player, pos, state, blockEntity, tool, replaced); 
         }
         return replaced;
     });
 
     @FunctionalInterface
     public interface AfterBlockBrokenCallback {
-        public boolean afterBlockBroken(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool);
+        public boolean afterBlockBroken(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool, boolean isBlockReplaced);
     }
     
     public static final Event<OnCraftingBlockCallback> ON_CRAFTING_BLOCK_USE =EventFactory.createArrayBacked(OnCraftingBlockCallback.class, callbacks -> (state, world, pos, player, hit) -> {
