@@ -126,7 +126,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 
 	public int configChallengeCommand(CommandContext<ServerCommandSource> ctx) {
 		ServerCommandSource source = ctx.getSource();
-		ServerPlayerEntity player= source.getPlayer();
+		ServerPlayerEntity player = source.getPlayer();
 
 		player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new ChallengeConfigManager(syncId, playerInventory, this.challengeCollection), Text.of("Challenge Config")));	
 		
@@ -177,6 +177,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(
 				CommandManager.literal("challenge")
+					.requires(source -> true)
 					.then(CommandManager.literal("config").executes(this::configChallengeCommand))
 					.then(CommandManager.literal("start").executes(this::startChallengeCommand))
 					.then(CommandManager.literal("stop").executes(this::stopChallengeCommand))
