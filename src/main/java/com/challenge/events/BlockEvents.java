@@ -15,11 +15,11 @@ import net.minecraft.world.World;
 
 public class BlockEvents {
     public static final Event<AfterBlockBrokenCallback> AFTER_BLOCK_BROKEN_EVENT = EventFactory.createArrayBacked(AfterBlockBrokenCallback.class, callbacks -> (world, player, pos, state, blockEntity, tool) -> {
+        boolean replaced = false;
         for (AfterBlockBrokenCallback callback : callbacks) {
-           boolean replaced = callback.afterBlockBroken(world, player, pos, state, blockEntity, tool); 
-           if (replaced) return replaced;
+           replaced |= callback.afterBlockBroken(world, player, pos, state, blockEntity, tool); 
         }
-        return false;
+        return replaced;
     });
 
     @FunctionalInterface
