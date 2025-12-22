@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class BlockMixin {
     @Inject(at = @At(value = "HEAD"), method = "afterBreak", cancellable = true)
     public void onAfterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool, CallbackInfo info) throws Exception {
-        boolean replaced = BlockEvents.AFTER_BLOCK_BROKEN_EVENT.invoker().afterBlockBroken(world, player, pos, state, blockEntity, tool);
+        boolean replaced = BlockEvents.AFTER_BLOCK_BROKEN_EVENT.invoker().afterBlockBroken(world, player, pos, state, blockEntity, tool, false);
         if (replaced) info.cancel();
     }
     
