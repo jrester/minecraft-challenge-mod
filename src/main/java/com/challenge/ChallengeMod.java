@@ -4,8 +4,6 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.command.permission.PermissionLevel;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
@@ -35,7 +33,6 @@ import com.challenge.challenges.SlayEnderDragonChallenge;
 import com.challenge.challenges.SlayWardenChallenge;
 import com.challenge.challenges.SlayWitherChallenge;
 import com.challenge.challenges.DeleteBlocksOnBreak;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 
 public class ChallengeMod implements DedicatedServerModInitializer {
@@ -177,6 +174,8 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(
 				CommandManager.literal("challenge")
+					// If the command does not have a permission check, the mod initialization fails on the  prod server.
+					// Not sure why it is required, but this noop fixes it...
 					.requires(source -> true)
 					.then(CommandManager.literal("config").executes(this::configChallengeCommand))
 					.then(CommandManager.literal("start").executes(this::startChallengeCommand))
