@@ -2,18 +2,17 @@ package com.challenge.challenges;
 
 import com.challenge.events.BlockEvents;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
 
 public class DeleteBlocksOnBreak extends BaseChallenge {
     private final String name = "Delete Blocks";
 
     @Override
     public void registerEventHandlers() {
-        BlockEvents.AFTER_BLOCK_BROKEN_EVENT.register((world, player, pos, state, blockEntity, tool, isBlockReplaced) -> {
+        BlockEvents.AFTER_PLAYER_DESTROY_EVENT.register((world, player, pos, state, blockEntity, tool, isBlockReplaced) -> {
             // No interaction w/ Block -> isBlockReplaced can be ignored
             if(!isActive()) return false; 
             for(int i = -1; i < 2; i++){
@@ -21,7 +20,7 @@ public class DeleteBlocksOnBreak extends BaseChallenge {
                     for(int k = -1; k < 2; k++){
                     if(i == 0 && j == 0 && k == 0)
                     continue;
-                    BlockPos tmpPos = pos.add(i, j, k);
+                    BlockPos tmpPos = pos.offset(i, j, k);
                     world.removeBlock(tmpPos, false);
                 }
             }
@@ -38,10 +37,9 @@ public class DeleteBlocksOnBreak extends BaseChallenge {
     @Override
     public ItemStack  getIndicatorItemStack() {
         if(isEnabled()) {
-            ItemStack itemStack = Items.BARRIER.getDefaultStack();
-            return itemStack;
+            return asIndicatorItemStack(Items.BARRIER);
         } else {
-            return Items.DIRT.getDefaultStack();
+            return asIndicatorItemStack(Items.DIRT);
         }
 
     }

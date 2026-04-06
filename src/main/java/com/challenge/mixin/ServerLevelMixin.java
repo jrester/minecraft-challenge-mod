@@ -8,14 +8,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.challenge.events.WorldEvents;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 
-@Mixin(ServerWorld.class)
-public class ServerWorldMixin {
-    @Inject(at = @At(value = "HEAD"), method = "spawnEntity")
+@Mixin(ServerLevel.class)
+public class ServerLevelMixin {
+    @Inject(at = @At(value = "HEAD"), method = "addEntity")
     public void onSpawnEntity(Entity entity, CallbackInfoReturnable info) {
-        ServerWorld world = (ServerWorld)(Object)this;
+        ServerLevel world = (ServerLevel)(Object)this;
         WorldEvents.ON_SPAWN_ENTITY.invoker().onSpawnEntity(world, entity);
     }
     

@@ -3,12 +3,10 @@ package com.challenge.challenges;
 import com.challenge.utils.Helpers;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 public class SlayWardenChallenge extends BaseChallenge {
 
@@ -33,15 +31,9 @@ public class SlayWardenChallenge extends BaseChallenge {
     @Override
     public ItemStack getIndicatorItemStack() {
         if (this.isEnabled()) {
-            ItemStack itemStack = Items.SCULK_SHRIEKER.getDefaultStack();
-            RegistryEntry<Enchantment> power = Helpers.getEnchantment(
-                this.getServer(),
-                Enchantments.POWER
-            );
-            itemStack.addEnchantment(power, 3);
-            return itemStack;
+            return asEnchantedIndicatorItemStack(Items.SCULK_SHRIEKER, Enchantments.POWER, 3);
         } else {
-            return Items.SCULK_SENSOR.getDefaultStack();
+            return asIndicatorItemStack(Items.SCULK_SENSOR);
         }
     }
 }

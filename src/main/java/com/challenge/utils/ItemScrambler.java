@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 public class ItemScrambler extends Scrambler<ItemStack> {
     public enum ItemCategory {
@@ -37,13 +37,13 @@ public class ItemScrambler extends Scrambler<ItemStack> {
     private final Map<ItemCategory, List<Item>> allItems;
     private final int maxIndex;
 
-    public ItemScrambler() {
-        allItems = ItemScrambler.collectCanonicalItems();
+    public ItemScrambler(MinecraftServer server) {
+        allItems = ItemScrambler.collectCanonicalItems(server);
         maxIndex = allItems.values().stream().map(itemList -> itemList.size()).reduce(0, (acc, size) -> Math.max(acc, size));
     }
 
-    private static HashMap<ItemCategory, List<Item>> collectCanonicalItems() {
-        final List<Item> allItems = Helpers.collectAllItems();
+    private static HashMap<ItemCategory, List<Item>> collectCanonicalItems(MinecraftServer server) {
+        final List<Item> allItems = Helpers.collectAllItems(server);
         HashMap<ItemCategory, List<Item>> canonicalItems = new HashMap<>();
 
         for(ItemCategory itemCategory : ItemCategory.values()) {
@@ -51,13 +51,13 @@ public class ItemScrambler extends Scrambler<ItemStack> {
         }
 
         for(Item item : allItems) {
-            if(item.getName().toString().endsWith("smithing_templae")) {
+            if(item.getName(item.getDefaultInstance()).toString().endsWith("smithing_templae")) {
                 canonicalItems.get(ItemCategory.SMITHING_TEMPLATE).add(item);
-            } else if (item.getName().toString().endsWith("pottery_sherd")) {
+            } else if (item.getName(item.getDefaultInstance()).toString().endsWith("pottery_sherd")) {
                 canonicalItems.get(ItemCategory.POTTERY_SHERD).add(item);
             } else if (item == Items.ENCHANTED_BOOK) {
                 canonicalItems.get(ItemCategory.ENCHANTED_BOOK).add(item);
-            } else if (item.getName().toString().contains("copper")) {
+            } else if (item.getName(item.getDefaultInstance()).toString().contains("copper")) {
                 canonicalItems.get(ItemCategory.COPPER).add(item);
             } else {
                 canonicalItems.get(ItemCategory.GENERAL).add(item);
@@ -68,7 +68,7 @@ public class ItemScrambler extends Scrambler<ItemStack> {
     }
     
     @Override
-    public ItemStack getScrambledForPlayer(int itemModifier, PlayerEntity player, MinecraftServer server) {
+    public ItemStack getScrambledForPlayer(int itemModifier, Player player, MinecraftServer server) {
         int playerModifier = this.getModifierForPlayer(player);
         int totalModifier = Math.abs(itemModifier * playerModifier + playerModifier) % (maxIndex + 1);
 
@@ -90,9 +90,9 @@ public class ItemScrambler extends Scrambler<ItemStack> {
         }
         if(chosen == ItemCategory.ENCHANTED_BOOK) {
             ItemStack itemStack = new ItemStack(this.allItems.get(chosen).get(0));
-            List<RegistryKey<Enchantment>> enchantmentKeys = Helpers.collectAllEnchantments();
-            RegistryKey<Enchantment> enchantmentKey = enchantmentKeys.get(totalModifier % enchantmentKeys.size());
-            RegistryEntry<Enchantment> enchantment = Helpers.getEnchantment(server, enchantmentKey);
+            List<ResourceKey<Enchantment>> enchantmentKeys = Helpers.collectAllEnchantments(server);
+            ResourceKey<Enchantment> enchantmentKey = enchantmentKeys.get(totalModifier % enchantmentKeys.size());
+            Holder.Reference<Enchantment> enchantment = Helpers.getEnchantment(server, enchantmentKey);
 
             int enchantmentLevel;
             if(enchantment.value().getMaxLevel() == 1) {
@@ -102,7 +102,7 @@ public class ItemScrambler extends Scrambler<ItemStack> {
             }
             System.out.println("Selected enchanted book with enchantment " + enchantment.value().toString() + " at level " + enchantmentLevel);
 
-            itemStack.addEnchantment(enchantment, enchantmentLevel);
+            itemStack.enchant(enchantment, enchantmentLevel);
             return itemStack;
         }
 

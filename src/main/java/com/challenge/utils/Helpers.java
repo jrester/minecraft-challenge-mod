@@ -4,83 +4,67 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 
-public class Helpers { 
-    public static List<Block> collectAllBlocks() {
-        return Registries.BLOCK.stream().collect(Collectors.toList());
+public class Helpers {
+    public static List<Block> collectAllBlocks(MinecraftServer server) {
+        RegistryAccess registryAccess = server.registryAccess();
+        var blockRegistry = registryAccess.lookupOrThrow(Registries.BLOCK);
+        return blockRegistry.stream().collect(Collectors.toList());
     }
 
     public static List<EntityType> collectAllSpawnableMobs() {
         return Arrays.asList(EntityType.class.getDeclaredFields())
-            .stream()
-            .filter(field -> field.getType() == EntityType.class)
-            .map(field -> {
-                try {
-                    return field.get(null);
-                } catch (Exception e) {
-                    return null;
-                }
-            })
-            .filter(entityType -> entityType != null)
-            .map(EntityType.class::cast)
-            .filter(entityType -> !entityType.getSpawnGroup().equals(SpawnGroup.MISC))
-            .collect(Collectors.toList());
-    }
- 
-    public static List<Item> collectAllItems() {
-        return Registries.ITEM.stream().collect(Collectors.toList());
+                .stream()
+                .filter(field -> field.getType() == EntityType.class)
+                .map(field -> {
+                    try {
+                        return field.get(null);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(entityType -> entityType != null)
+                .map(EntityType.class::cast)
+                .filter(entityType -> !entityType.getCategory().equals(MobCategory.MISC))
+                .collect(Collectors.toList());
     }
 
-
-    public static List<StatusEffect> collectAllStatusEffects() {
-        return Arrays.asList(StatusEffects.class.getDeclaredFields())
-            .stream()
-            .map(field -> {
-                try {
-                    return field.get(null);
-                } catch(IllegalAccessException e) {
-                    return null;
-                }
-            })
-            .filter(effect -> effect != null)
-            .map(RegistryEntry.class::cast)
-            .map(entry -> entry.getKey().orElseThrow())
-            .map(RegistryKey.class::cast)
-            .map(key -> Registries.STATUS_EFFECT.get(key))
-            .collect(Collectors.toList());
+    public static List<Item> collectAllItems(MinecraftServer server) {
+        RegistryAccess registryAccess = server.registryAccess();
+        var itemRegistry = registryAccess.lookupOrThrow(Registries.ITEM);
+        return itemRegistry.stream().collect(Collectors.toList());
     }
 
-  /* Helper method for getting enchantments, because somehow it is not trivial... */
-  public static RegistryEntry<Enchantment> getEnchantment(MinecraftServer server, RegistryKey<Enchantment> enchantment) {
-      World world = server.getWorld(RegistryKey.of(RegistryKeys.WORLD, Identifier.of("overworld"))); 
-      return RegistryEntry.of(world.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).get(enchantment));
-  }
+    public static List<MobEffect> collectAllStatusEffects(MinecraftServer server) {
+        RegistryAccess registryAccess = server.registryAccess();
+        var enchantmentRegistry = registryAccess.lookupOrThrow(Registries.MOB_EFFECT);
+        return enchantmentRegistry.stream().toList();
+    }
 
-      public static List<RegistryKey<Enchantment>> collectAllEnchantments() {
-      return Arrays.asList(Enchantments.class.getDeclaredFields())
-          .stream()
-    			.map(field -> { try {
-                    return field.get(null); 
-                } catch(IllegalAccessException e) {
-                    return null;
-                }})
-    			.filter(item -> item != null)
-    			.map(e -> (RegistryKey<Enchantment>) e)
-    			.collect(Collectors.toList());
-  }
+    /*
+     * Helper method for getting enchantments, because somehow it is not trivial...
+     */
+    public static Holder.Reference<Enchantment> getEnchantment(MinecraftServer server,
+            ResourceKey<Enchantment> enchantment) {
+        RegistryAccess registryAccess = server.registryAccess();
+        var enchantmentRegistry = registryAccess.lookupOrThrow(Registries.ENCHANTMENT);
+        return enchantmentRegistry.getOrThrow(enchantment);
+    }
+
+    public static List<ResourceKey<Enchantment>> collectAllEnchantments(MinecraftServer server) {
+        RegistryAccess registryAccess = server.registryAccess();
+        var enchantmentRegistry = registryAccess.lookupOrThrow(Registries.ENCHANTMENT);
+        return enchantmentRegistry.entrySet().stream().map(e -> e.getKey()).toList();
+    }
 }

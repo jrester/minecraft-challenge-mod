@@ -4,17 +4,23 @@ package com.challenge.challenges;
 import com.challenge.utils.Helpers;
 import com.challenge.utils.Randomizer;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+
 
 public class RandomBlockDropsChallenge extends AbstractBlockDropsChallenge {
     private final String name = "Random Block Drops";
 
-    private final Randomizer<Item> itemRandomizer = new Randomizer<>(Helpers.collectAllItems());
+    private Randomizer<Item> itemRandomizer = null;
 
+    @Override
+    public void enable() {
+        super.enable();
+        this.itemRandomizer = new Randomizer<>(Helpers.collectAllItems(getServer()));
+    }
 
     @Override
     public String getName() {
@@ -22,7 +28,7 @@ public class RandomBlockDropsChallenge extends AbstractBlockDropsChallenge {
     }
 
     @Override
-    protected ItemStack getItem(World world, PlayerEntity player, BlockState state) {
+    protected ItemStack getItem(Level level, Player player, BlockState state) {
         return new ItemStack(itemRandomizer.getRandom());
     }
 }

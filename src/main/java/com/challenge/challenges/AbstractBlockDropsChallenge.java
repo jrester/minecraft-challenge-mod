@@ -1,33 +1,31 @@
 package com.challenge.challenges;
 
 import com.challenge.events.BlockEvents;
-import com.challenge.utils.Helpers;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+
 
 public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
-    protected abstract ItemStack getItem(World world, PlayerEntity player, BlockState state); 
+    protected abstract ItemStack getItem(Level level, Player player, BlockState state); 
 
     @Override
     public void registerEventHandlers() {
-        BlockEvents.AFTER_BLOCK_BROKEN_EVENT.register((world, player, pos, state, blockEntity, tool, isBlockReplaced) -> {
+        BlockEvents.AFTER_PLAYER_DESTROY_EVENT.register((world, player, pos, state, blockEntity, tool, isBlockReplaced) -> {
             try{
                 if(!isActive() || isBlockReplaced) return false; 
                 ItemStack itemStack = this.getItem(world, player, state);
                 // Make sure to spawn the item at the canter of the original block, because otherwise it will glitch into the blocks around
-                Vec3d blockCenterPos = pos.toCenterPos();
-                ItemEntity itemEntity = new ItemEntity(world, blockCenterPos.getX(), blockCenterPos.getY(), blockCenterPos.getZ(), itemStack);
-                itemEntity.setToDefaultPickupDelay();
-                world.spawnEntity(itemEntity); 
+                Vec3 blockCenterPos = pos.getCenter();
+                ItemEntity itemEntity = new ItemEntity(world, blockCenterPos.x(), blockCenterPos.y(), blockCenterPos.z(), itemStack);
+                itemEntity.setDefaultPickUpDelay();
+                world.addFreshEntity(itemEntity); 
                 return true;
             } catch(Exception e) {
               LOGGER.error("Exception occured while trying to replace block drop for {}: {}", blockEntity.toString(), e);
@@ -39,12 +37,9 @@ public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
     @Override
     public ItemStack getIndicatorItemStack() {
         if(this.isEnabled()) {
-            ItemStack itemStack = Items.NETHERITE_PICKAXE.getDefaultStack();
-            RegistryEntry<Enchantment> fortune = Helpers.getEnchantment(this.getServer(), Enchantments.FORTUNE);
-            itemStack.addEnchantment(fortune, 3);
-            return itemStack;
+            return asEnchantedIndicatorItemStack(Items.NETHERITE_AXE, Enchantments.FORTUNE, 3);
         } else {
-            return Items.WOODEN_PICKAXE.getDefaultStack();
+            return asIndicatorItemStack(Items.WOODEN_PICKAXE);
         }
     }    
     

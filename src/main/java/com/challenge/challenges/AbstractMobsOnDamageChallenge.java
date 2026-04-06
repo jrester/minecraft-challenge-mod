@@ -1,46 +1,44 @@
 package com.challenge.challenges;
 
-import com.challenge.utils.Helpers;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.Entity.RemovalReason;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.world.entity.Entity.RemovalReason;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 
 public abstract class AbstractMobsOnDamageChallenge extends BaseChallenge {
-    protected abstract EntityType getMob(LivingEntity victim, PlayerEntity player);
+    protected abstract EntityType getMob(LivingEntity victim, Player layer);
 
     @Override
     public void registerEventHandlers() {
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
             try{
                 if(!this.isActive()) return;
-                if (entity.isPlayer()) return;
-                if(source.getAttacker() == null) return;
-                if (!source.getAttacker().isPlayer()) return;
+                if(entity instanceof Player) return;
+                if(source.getEntity() == null) return;
+                if (!(source.getEntity() instanceof Player)) return;
                 // Do not change ender dragon in the end
-                ServerWorld world = (ServerWorld)entity.getEntityWorld();
-                if(entity.getType().equals(EntityType.ENDER_DRAGON) && world.getRegistryKey().equals(World.END)) return;
+                Level level = entity.level();
+                if(entity.getType().equals(EntityType.ENDER_DRAGON) && level.dimensionType().hasEnderDragonFight()) return;
 
                 // If we got this far, this means that
                 // 1. The entity is alive and was not killed by the damage (this is implied by the event definition)
                 // 2. The entity can be safely replaced
 
-                PlayerEntity player = (PlayerEntity)source.getAttacker();
+                 
+                Player player = (Player)source.getEntity();
                 EntityType replacementType = this.getMob(entity, player);
-                BlockPos entityPos = entity.getBlockPos();
-                LivingEntity replacement = (LivingEntity)replacementType.create(world, null, entityPos, SpawnReason.TRIGGERED, false, false);
-                world.spawnEntity(replacement); 
+                BlockPos entityPos = entity.getOnPos();
+                LivingEntity replacement = (LivingEntity)replacementType.spawn((ServerLevel)level, entityPos.above(), EntitySpawnReason.TRIGGERED);
+                
                 // This is the After Damage event, which means that the damage was already applied to the entity.
                 // Therefore, health of the replacement is set to the entity health, and will be automatically set to the max health of the replacement
                 // if the new health exceeds the replacements max health
@@ -56,12 +54,9 @@ public abstract class AbstractMobsOnDamageChallenge extends BaseChallenge {
     @Override
     public ItemStack getIndicatorItemStack() {
         if(isEnabled()) {
-            ItemStack itemStack = Items.SPAWNER.getDefaultStack();
-            RegistryEntry<Enchantment> fortune = Helpers.getEnchantment(this.getServer(), Enchantments.FORTUNE);
-            itemStack.addEnchantment(fortune, 3);
-            return itemStack;
+            return asEnchantedIndicatorItemStack(Items.SPAWNER, Enchantments.FORTUNE, 3);
         } else {
-            return Items.SPAWNER.getDefaultStack();
+            return asIndicatorItemStack(Items.SPAWNER);
         }
     }
     

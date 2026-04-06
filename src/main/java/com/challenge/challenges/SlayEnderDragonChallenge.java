@@ -4,8 +4,8 @@ package com.challenge.challenges;
 
 import com.challenge.events.GameEvents;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 
 public class SlayEnderDragonChallenge extends BaseChallenge {
@@ -27,10 +27,10 @@ public class SlayEnderDragonChallenge extends BaseChallenge {
   @Override
   public ItemStack getIndicatorItemStack() {
     if(this.isEnabled()) {
-      ItemStack itemStack = Items.DRAGON_HEAD.getDefaultStack();
+      ItemStack itemStack = Items.DRAGON_HEAD.getDefaultInstance();
       return itemStack;
     } else {
-      return Items.ENDER_PEARL.getDefaultStack();
+      return Items.ENDER_PEARL.getDefaultInstance();
     }
   }
 }
