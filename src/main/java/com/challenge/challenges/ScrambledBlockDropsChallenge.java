@@ -2,7 +2,9 @@ package com.challenge.challenges;
 
 
 
-import com.challenge.utils.ItemScrambler;
+
+import com.challenge.utils.CategorizedItemSelector;
+import com.challenge.utils.Scrambler;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,12 +15,12 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ScrambledBlockDropsChallenge extends AbstractBlockDropsChallenge {
     private final String name = "Scrambled Block Drops";
 
-    private ItemScrambler itemScrambler = null;
+    private Scrambler<ItemStack> itemScrambler;
 
     @Override
     public void enable() {
         super.enable();
-        this.itemScrambler = new ItemScrambler(getServer());
+        this.itemScrambler = new Scrambler<>(CategorizedItemSelector.create(getServer()));
     }
 
     @Override

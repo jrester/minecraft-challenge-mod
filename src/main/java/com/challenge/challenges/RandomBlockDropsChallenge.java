@@ -1,7 +1,8 @@
 package com.challenge.challenges;
 
 
-import com.challenge.utils.ItemRandomizer;
+import com.challenge.utils.CategorizedItemSelector;
+import com.challenge.utils.Randomizer;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -12,12 +13,12 @@ import net.minecraft.world.level.block.state.BlockState;
 public class RandomBlockDropsChallenge extends AbstractBlockDropsChallenge {
     private final String name = "Random Block Drops";
 
-    private ItemRandomizer itemRandomizer = null;
+    private Randomizer<ItemStack> itemRandomizer = null;
 
     @Override
     public void enable() {
         super.enable();
-        this.itemRandomizer = new ItemRandomizer(getServer());
+        this.itemRandomizer = new Randomizer<>(CategorizedItemSelector.create(getServer()));
     }
 
     @Override

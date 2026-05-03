@@ -1,6 +1,8 @@
 package com.challenge.challenges;
 
-import com.challenge.utils.MobScrambler;
+
+import com.challenge.utils.MobSelector;
+import com.challenge.utils.Scrambler;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +15,13 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 public class ScrambledMobsOnDamageChallenge extends AbstractMobsOnDamageChallenge {
     private final String name = "Scrambled Mobs on Damage";
-    private final MobScrambler mobScrambler = new MobScrambler();
+    private Scrambler<EntityType> mobScrambler;
+
+    @Override
+    public void enable() {
+        super.enable();
+        this.mobScrambler = new Scrambler<>(MobSelector.create(getServer()));
+    }
 
     @Override
     protected EntityType getMob(LivingEntity victim, Player player) {

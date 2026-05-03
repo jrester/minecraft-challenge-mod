@@ -7,9 +7,15 @@ import java.util.Random;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 
-public abstract class Scrambler<T> {
+public class Scrambler<T> {
     protected Random random = new Random();
+    private final Selector<T> selector;
+
     private Map<String, Integer> playerModifiers = new HashMap<>();
+
+    public Scrambler(Selector<T> selector) {
+        this.selector = selector;
+    }
 
     protected int getModifierForPlayer(Player player) {
         String uuid = player.getStringUUID();
@@ -22,6 +28,10 @@ public abstract class Scrambler<T> {
         }
         return modifier;
     }
-    
-    abstract public T getScrambledForPlayer(int itemModifier, Player player, MinecraftServer server);
+
+    public T getScrambledForPlayer(int itemModifier, Player player, MinecraftServer server) {
+        int playerModifier = this.getModifierForPlayer(player);
+        int totalModifier = Math.abs(itemModifier * playerModifier + playerModifier);
+        return this.selector.selectWithModifier(totalModifier);
+    }     
 }

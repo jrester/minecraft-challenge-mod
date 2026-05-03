@@ -23,21 +23,12 @@ public class Helpers {
         return blockRegistry.stream().collect(Collectors.toList());
     }
 
-    public static List<EntityType> collectAllSpawnableMobs() {
-        return Arrays.asList(EntityType.class.getDeclaredFields())
-                .stream()
-                .filter(field -> field.getType() == EntityType.class)
-                .map(field -> {
-                    try {
-                        return field.get(null);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .filter(entityType -> entityType != null)
-                .map(EntityType.class::cast)
-                .filter(entityType -> !entityType.getCategory().equals(MobCategory.MISC))
-                .collect(Collectors.toList());
+    public static List<EntityType> collectAllSpawnableMobs(MinecraftServer server) {
+        RegistryAccess registryAccess = server.registryAccess();
+        var itemRegistry = registryAccess.lookupOrThrow(Registries.ENTITY_TYPE);
+        return itemRegistry.stream()
+            .filter(entityType -> !entityType.getCategory().equals(MobCategory.MISC))
+            .collect(Collectors.toList());
     }
 
     public static List<Item> collectAllItems(MinecraftServer server) {

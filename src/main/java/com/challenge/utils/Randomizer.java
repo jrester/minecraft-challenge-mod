@@ -1,19 +1,19 @@
 package com.challenge.utils;
 
-import java.util.List;
 import java.util.Random;
 
 
 public class Randomizer<T> {
     private Random random = new Random();
-    private final List<T> allItems;
+    private final Selector<T> selector;
 
-    public Randomizer(List<T> allItems) {
-        this.allItems = allItems;
+    public Randomizer(Selector<T> selector) {
+        this.selector = selector;
     }
 
 
     public T getRandom() {
-        return allItems.get(random.nextInt(allItems.size()));
+        int modifier = random.nextInt(this.selector.getMaxSelectionModifier());
+        return this.selector.selectWithModifier(modifier);
     }
 }

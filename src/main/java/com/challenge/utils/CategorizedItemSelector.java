@@ -21,7 +21,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 
-public class CategorizedItemCollection {
+public class CategorizedItemSelector implements Selector<ItemStack> {
     public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
     private final int MAX_ENCHANTMENT_NUM = 5;
 
@@ -30,17 +30,17 @@ public class CategorizedItemCollection {
     private final List<ResourceKey<Enchantment>> enchantmentKeys;
     public final int size;
 
-    public CategorizedItemCollection(MinecraftServer server, Map<ItemCategory, List<Item>> categorizedItems, List<ResourceKey<Enchantment>> enchantments) {
+    public CategorizedItemSelector(MinecraftServer server, Map<ItemCategory, List<Item>> categorizedItems, List<ResourceKey<Enchantment>> enchantments) {
         this.server = server;
         this.categorizedItems = categorizedItems;
         this.enchantmentKeys = enchantments;
         this.size = categorizedItems.values().stream().map(itemList -> itemList.size()).reduce(0, (acc, size) -> Math.max(acc, size));
     }
 
-    public static CategorizedItemCollection create(MinecraftServer server) {
-        var categorizedItems = CategorizedItemCollection.collectCategorizedItems(server);
+    public static CategorizedItemSelector create(MinecraftServer server) {
+        var categorizedItems = CategorizedItemSelector.collectCategorizedItems(server);
         var enchantments = Helpers.collectAllEnchantments(server);
-        return new CategorizedItemCollection(server, categorizedItems, enchantments);
+        return new CategorizedItemSelector(server, categorizedItems, enchantments);
     }
 
     public static Map<ItemCategory, List<Item>> collectCategorizedItems(MinecraftServer server) {
@@ -72,8 +72,12 @@ public class CategorizedItemCollection {
         return this.categorizedItems.keySet();
     }
 
-    public ItemStack getItemStack(final int modifier) {
-        int scopedModifier = modifier % (this.size + 1);
+    public int getMaxSelectionModifier(){
+        return this.size + 1;
+    }
+
+    public ItemStack selectWithModifier(final int modifier) {
+        int scopedModifier = modifier % this.getMaxSelectionModifier();
         ItemCategory category = getChoosenCategory(scopedModifier);
         return getItemStackForCategory(category, scopedModifier);
     }

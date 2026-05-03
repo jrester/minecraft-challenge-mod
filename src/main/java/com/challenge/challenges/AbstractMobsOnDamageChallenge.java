@@ -43,6 +43,7 @@ public abstract class AbstractMobsOnDamageChallenge extends BaseChallenge {
                 // Therefore, health of the replacement is set to the entity health, and will be automatically set to the max health of the replacement
                 // if the new health exceeds the replacements max health
                 replacement.setHealth(entity.getHealth());
+                replacement.setArrowCount(entity.getArrowCount());
                 entity.remove(RemovalReason.KILLED);
             } catch(Exception e) {
                   LOGGER.error("Exception occured while trying to replace entity {}: {}", entity.toString(), e);

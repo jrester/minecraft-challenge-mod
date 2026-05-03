@@ -44,7 +44,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	private final ChallengeTimeController challengeTimeController = new ChallengeTimeController(LOGGER);
+	private final ChallengeTimeController challengeTimeController = new ChallengeTimeController();
 	private final ChallengeCollection challengeCollection = new ChallengeCollection();
 	private List<ServerPlayer> players = new LinkedList<>();
 
@@ -152,7 +152,6 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 
 	@Override
 	public void onInitializeServer() {	
-
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			ServerPlayer newPlayer = handler.getPlayer();
 			this.players.add(newPlayer);

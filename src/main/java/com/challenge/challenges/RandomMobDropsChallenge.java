@@ -1,6 +1,7 @@
 package com.challenge.challenges;
 
-import com.challenge.utils.ItemRandomizer;
+import com.challenge.utils.CategorizedItemSelector;
+import com.challenge.utils.Randomizer;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -10,12 +11,12 @@ import net.minecraft.world.level.Level;
 
 public class RandomMobDropsChallenge extends AbstractMobDropsChallenge {
   private final String name = "Random Mob Drops";
-  private ItemRandomizer itemRandomizer = null;
+  private Randomizer<ItemStack> itemRandomizer = null;
 
   @Override
   public void enable() {
     super.enable();
-    this.itemRandomizer = new ItemRandomizer(getServer());
+    this.itemRandomizer = new Randomizer<>(CategorizedItemSelector.create(getServer()));
   }
 
   @Override

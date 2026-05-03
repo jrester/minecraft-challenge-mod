@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.challenge.challenges.BaseChallenge;
 
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;

@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -15,7 +16,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 
 class ChallengeTimeController {
-    private final Logger LOGGER;
+	public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
   
 	private List<ServerPlayer> players = new LinkedList<>();
 	private ScheduledThreadPoolExecutor executor;
@@ -25,8 +26,6 @@ class ChallengeTimeController {
 	private long alreadyElapsed = 0;
 	private boolean paused = false;
 	private boolean running = false;
-
-  	public ChallengeTimeController(Logger logger) {this.LOGGER = logger;}
 
   	class ChallengeTimer implements Runnable {
     	public void run() {
