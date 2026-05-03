@@ -131,7 +131,7 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		ServerPlayer player = source.getPlayer();
 
 		player.openMenu(new SimpleMenuProvider(
-				(containerId, inventory, p) -> new ChallengeConfigManager(containerId, inventory, p, this.challengeCollection),
+				(containerId, inventory, p) -> new ChallengeConfigManager(containerId, p, this.challengeCollection),
 				Component.literal("Challenge Config")
 			)
 		);

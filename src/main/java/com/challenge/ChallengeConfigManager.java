@@ -3,13 +3,10 @@ package com.challenge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.challenge.challenges.BaseChallenge;
 
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class ChallengeConfigManager extends AbstractContainerMenu {
@@ -18,10 +15,9 @@ public class ChallengeConfigManager extends AbstractContainerMenu {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
 
 
-  private Inventory inventory;
   private ChallengeCollection challengeCollection;
 
-  public ChallengeConfigManager(int containerId, Inventory Inventory, Player player, ChallengeCollection challengeCollection) {
+  public ChallengeConfigManager(int containerId, Player player, ChallengeCollection challengeCollection) {
     super(MenuType.GENERIC_9x6, containerId);
     this.challengeCollection = challengeCollection;
 
