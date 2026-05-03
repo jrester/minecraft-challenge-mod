@@ -43,19 +43,16 @@ public class ChallengeCollection implements Container {
 		}
 
 		public ItemStack removeItem(int slot, int count) {
-			LOGGER.info("removeItem");
 			this.toggleChallenge(slot);
 			return ItemStack.EMPTY;
 		}
 
 		public ItemStack removeItemNoUpdate(int slot) {
-			LOGGER.info("removeItemNoUpdate");
 			this.toggleChallenge(slot);
 			return ItemStack.EMPTY;
 		}
 
 		public void setItem(int slot, ItemStack itemStack) {
-			LOGGER.info("setItem");
 		}
 
 		public ChallengeCollection() {

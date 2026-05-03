@@ -28,7 +28,7 @@ public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
                 world.addFreshEntity(itemEntity); 
                 return true;
             } catch(Exception e) {
-              LOGGER.error("Exception occured while trying to replace block drop for {}: {}", blockEntity.toString(), e);
+              LOGGER.error("Exception occured while trying to replace block drop for {}: {}", state.getBlock().getName().toString(), e);
               return false;   
             }
         });
@@ -37,7 +37,7 @@ public abstract class AbstractBlockDropsChallenge extends BaseChallenge {
     @Override
     public ItemStack getIndicatorItemStack() {
         if(this.isEnabled()) {
-            return asEnchantedIndicatorItemStack(Items.NETHERITE_AXE, Enchantments.FORTUNE, 3);
+            return asEnchantedIndicatorItemStack(Items.NETHERITE_PICKAXE, Enchantments.FORTUNE, 3);
         } else {
             return asIndicatorItemStack(Items.WOODEN_PICKAXE);
         }
