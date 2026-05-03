@@ -1,22 +1,19 @@
-
 package com.challenge.challenges;
 
-
 import com.challenge.events.GameEvents;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
 
 public class SlayEnderDragonChallenge extends BaseChallenge {
   private final String name = "Slay Ender Dragon";
 
   @Override
   public void registerEventHandlers() {
-    GameEvents.ON_ENDER_DRAGON_KILLED.register(() -> {
-      if(!this.isActive()) return;
-      this.challengeFinished(true);
-    });
+    GameEvents.ON_ENDER_DRAGON_KILLED.register(
+        () -> {
+          if (!this.isActive()) return;
+          this.challengeFinished(true);
+        });
   }
 
   @Override
@@ -26,7 +23,7 @@ public class SlayEnderDragonChallenge extends BaseChallenge {
 
   @Override
   public ItemStack getIndicatorItemStack() {
-    if(this.isEnabled()) {
+    if (this.isEnabled()) {
       ItemStack itemStack = Items.DRAGON_HEAD.getDefaultInstance();
       return itemStack;
     } else {

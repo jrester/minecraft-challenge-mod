@@ -1,9 +1,7 @@
-
 package com.challenge.challenges;
 
 import com.challenge.utils.CategorizedItemSelector;
 import com.challenge.utils.Scrambler;
-
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,10 +19,9 @@ public class ScrambledMobDropsChallenge extends AbstractMobDropsChallenge {
 
   @Override
   protected ItemStack getItem(Level level, Player player, LivingEntity victim) {
-      int victimTypeHash = Math.abs(victim.getType().hashCode());
-      return this.itemScrambler.getScrambledForPlayer(victimTypeHash, player, this.getServer());
+    int victimTypeHash = Math.abs(victim.getType().hashCode());
+    return this.itemScrambler.getScrambledForPlayer(victimTypeHash, player, this.getServer());
   }
-
 
   @Override
   public String getName() {

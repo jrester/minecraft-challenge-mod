@@ -1,124 +1,120 @@
 package com.challenge;
 
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ChallengeTimeController {
-	public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
-  
-	private List<ServerPlayer> players = new LinkedList<>();
-	private ScheduledThreadPoolExecutor executor;
-	private ScheduledFuture<?> timer;
+  public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
 
-	private long startTime = 0;
-	private long alreadyElapsed = 0;
-	private boolean paused = false;
-	private boolean running = false;
+  private List<ServerPlayer> players = new LinkedList<>();
+  private ScheduledThreadPoolExecutor executor;
+  private ScheduledFuture<?> timer;
 
-  	class ChallengeTimer implements Runnable {
-    	public void run() {
-			TextColor red = TextColor.parseColor("red").getOrThrow();
-			Component message;
-			if(paused) {
-				message = Component.literal("Challenge Paused").setStyle(Style.EMPTY.withColor(red));
-			} else {
-				long currentTime = System.currentTimeMillis();
-				long elapsedTime = currentTime - startTime + alreadyElapsed;
-				String timeFormated = ChallengeTimeController.formatElapsedTime(elapsedTime);
-				message = Component.literal(timeFormated).setStyle(Style.EMPTY.withColor(red).withBold(true));
-			}
-			for (ServerPlayer player : players) {
-				player.sendOverlayMessage(message);
-			}
-		}
-  	}
+  private long startTime = 0;
+  private long alreadyElapsed = 0;
+  private boolean paused = false;
+  private boolean running = false;
 
-  	public void addPlayer(ServerPlayer player) {
-  	  if (!this.players.contains(player)) {
-    	  this.players.add(player);
-  	  }
-  	}
+  class ChallengeTimer implements Runnable {
+    public void run() {
+      TextColor red = TextColor.parseColor("red").getOrThrow();
+      Component message;
+      if (paused) {
+        message = Component.literal("Challenge Paused").setStyle(Style.EMPTY.withColor(red));
+      } else {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - startTime + alreadyElapsed;
+        String timeFormated = ChallengeTimeController.formatElapsedTime(elapsedTime);
+        message =
+            Component.literal(timeFormated).setStyle(Style.EMPTY.withColor(red).withBold(true));
+      }
+      for (ServerPlayer player : players) {
+        player.sendOverlayMessage(message);
+      }
+    }
+  }
 
-  	public void removePlayer(ServerPlayer player) {
-  	  if (!this.players.contains(player)) {
-    	  this.players.remove(player);
-  	  }
-  	}
+  public void addPlayer(ServerPlayer player) {
+    if (!this.players.contains(player)) {
+      this.players.add(player);
+    }
+  }
 
-  	public static String formatElapsedTime(long elapsedTime) {
-  		long hours = TimeUnit.MILLISECONDS.toHours(elapsedTime) % 24;
-  		long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60;
-  		long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60;
+  public void removePlayer(ServerPlayer player) {
+    if (!this.players.contains(player)) {
+      this.players.remove(player);
+    }
+  }
 
-  		return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-  	  
-  	}
+  public static String formatElapsedTime(long elapsedTime) {
+    long hours = TimeUnit.MILLISECONDS.toHours(elapsedTime) % 24;
+    long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60;
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60;
 
-  	  	
-	public void start() {
-		if (running) return;
-		this.alreadyElapsed = 0;
-	    this.startTime = System.currentTimeMillis();
-	    this.executor = new ScheduledThreadPoolExecutor(1);
-	    Runnable _timer = new ChallengeTimer();
-	    this.timer = this.executor.scheduleAtFixedRate(_timer, 0, 500, TimeUnit.MILLISECONDS);
-	    this.running = true;
-	}
+    return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+  }
 
-	public void pause() {
-		if(!running) return;
-		if (paused) return;
-		long currentTime = System.currentTimeMillis();
-		this.alreadyElapsed += currentTime - this.startTime;
-		this.startTime = 0;
-		this.paused = true;
-	}
+  public void start() {
+    if (running) return;
+    this.alreadyElapsed = 0;
+    this.startTime = System.currentTimeMillis();
+    this.executor = new ScheduledThreadPoolExecutor(1);
+    Runnable _timer = new ChallengeTimer();
+    this.timer = this.executor.scheduleAtFixedRate(_timer, 0, 500, TimeUnit.MILLISECONDS);
+    this.running = true;
+  }
 
-	public void resume() {
-		if(!running) return;
-		if (!paused) return;
-		this.startTime = System.currentTimeMillis();
-		this.paused = false;
-	}
+  public void pause() {
+    if (!running) return;
+    if (paused) return;
+    long currentTime = System.currentTimeMillis();
+    this.alreadyElapsed += currentTime - this.startTime;
+    this.startTime = 0;
+    this.paused = true;
+  }
 
-	public void stop() {
-		if(!running) return;
-		this.timer.cancel(true);
-		this.executor.close();
+  public void resume() {
+    if (!running) return;
+    if (!paused) return;
+    this.startTime = System.currentTimeMillis();
+    this.paused = false;
+  }
 
-		long totalElapsedTime = this.alreadyElapsed;
-		if (!this.paused) {
-		long currentTime = System.currentTimeMillis();
-			totalElapsedTime = totalElapsedTime + (currentTime - this.startTime);
-			this.alreadyElapsed = totalElapsedTime;
-		}
+  public void stop() {
+    if (!running) return;
+    this.timer.cancel(true);
+    this.executor.close();
 
-		this.startTime = 0;
-		this.paused = false;
-		this.running = false;
-	}
-	
-	public boolean isRunning() {
-		return running;
-	}
+    long totalElapsedTime = this.alreadyElapsed;
+    if (!this.paused) {
+      long currentTime = System.currentTimeMillis();
+      totalElapsedTime = totalElapsedTime + (currentTime - this.startTime);
+      this.alreadyElapsed = totalElapsedTime;
+    }
 
-	public boolean isPaused() {
-		return paused;
-	}
+    this.startTime = 0;
+    this.paused = false;
+    this.running = false;
+  }
 
-	public String getElapsedTimeFormated() {
-		return ChallengeTimeController.formatElapsedTime(this.alreadyElapsed);
-	}
+  public boolean isRunning() {
+    return running;
+  }
+
+  public boolean isPaused() {
+    return paused;
+  }
+
+  public String getElapsedTimeFormated() {
+    return ChallengeTimeController.formatElapsedTime(this.alreadyElapsed);
+  }
 }

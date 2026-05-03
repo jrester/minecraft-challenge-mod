@@ -1,6 +1,3 @@
 package com.challenge.mixin;
 
-
-public class WardenMixin {
-    
-}
+public class WardenMixin {}

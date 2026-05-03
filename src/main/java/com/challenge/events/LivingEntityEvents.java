@@ -6,17 +6,22 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 public class LivingEntityEvents {
-  public static final Event<LivingEntityLootDropCallback> ON_LIVING_ENTITY_LOOT_DROP = EventFactory.createArrayBacked(LivingEntityLootDropCallback.class, callbacks -> (victim, damageSource, causedByPlayer) -> {
-      for(LivingEntityLootDropCallback callback : callbacks) {
-        boolean replaced = callback.onLivingEntityLootDrop(victim, damageSource, causedByPlayer);
-        if (replaced) return replaced;
-      }
-      return false;
-    });
+  public static final Event<LivingEntityLootDropCallback> ON_LIVING_ENTITY_LOOT_DROP =
+      EventFactory.createArrayBacked(
+          LivingEntityLootDropCallback.class,
+          callbacks ->
+              (victim, damageSource, causedByPlayer) -> {
+                for (LivingEntityLootDropCallback callback : callbacks) {
+                  boolean replaced =
+                      callback.onLivingEntityLootDrop(victim, damageSource, causedByPlayer);
+                  if (replaced) return replaced;
+                }
+                return false;
+              });
 
   @FunctionalInterface
   public interface LivingEntityLootDropCallback {
-    public boolean onLivingEntityLootDrop(LivingEntity victim, DamageSource damageSource, boolean causedByPlayer);
+    public boolean onLivingEntityLootDrop(
+        LivingEntity victim, DamageSource damageSource, boolean causedByPlayer);
   }
-
 }

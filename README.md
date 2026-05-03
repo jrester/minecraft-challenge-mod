@@ -43,5 +43,3 @@ If the mod was loaded successfully, you will have the following commands availab
 
 * *Randomizer*: A randomizer always select a random item/block/mob for every player. E.g. if player x first hits a cow, it is replaced by a chicken. If player x hits a second cow it is replaced by a zombie.
 * *Scrambler*: A scrambler will pre-randomize all items/blocks/mobs for each player and then deterministically select the same item/block/mob for each input element. E.g. if player x hits a cow, the cow will always be replaced by a chicken, while if player y hits a cow, the cow will always be replaced by a wither.
-
-
