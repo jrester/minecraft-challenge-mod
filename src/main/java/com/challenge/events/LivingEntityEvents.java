@@ -2,8 +2,8 @@ package com.challenge.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class LivingEntityEvents {
   public static final Event<LivingEntityLootDropCallback> ON_LIVING_ENTITY_LOOT_DROP = EventFactory.createArrayBacked(LivingEntityLootDropCallback.class, callbacks -> (victim, damageSource, causedByPlayer) -> {

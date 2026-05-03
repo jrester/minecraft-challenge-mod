@@ -5,13 +5,13 @@ import java.util.Random;
 import com.challenge.events.WorldEvents;
 import com.challenge.utils.Helpers;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+
 
 public class RandomMobSpeedChallenge extends BaseChallenge {
     public final String name = "Random Mob Speed";
@@ -22,9 +22,9 @@ public class RandomMobSpeedChallenge extends BaseChallenge {
        WorldEvents.ON_SPAWN_ENTITY.register((world, entity) -> {
         if(!this.isActive()) return;
         // Do not change the speed of players
-        if(entity.isPlayer()) return;
+        if(entity instanceof Player) return;
         // Only apply to mobs not e.g. dropped items
-        if(!entity.isLiving()) return;
+        if(!(entity instanceof LivingEntity)) return;
         int pivot = random.nextInt(100);
         double newSpeed = 0.0D;
         if (pivot < 20) {
@@ -37,19 +37,16 @@ public class RandomMobSpeedChallenge extends BaseChallenge {
             newSpeed = random.nextDouble(2.5D, 5.0D);
         }
         LivingEntity livingEntity = (LivingEntity)entity;
-        livingEntity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(newSpeed);
+        livingEntity.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(newSpeed);
        }); 
     }
 
     @Override
     public ItemStack getIndicatorItemStack() {
         if(isEnabled()) {
-            ItemStack itemStack = Items.NETHERITE_BOOTS.getDefaultStack();
-            RegistryEntry<Enchantment> enchantment = Helpers.getEnchantment(this.getServer(), Enchantments.SOUL_SPEED);
-            itemStack.addEnchantment(enchantment, 1);
-            return itemStack;
+            return asEnchantedIndicatorItemStack(Items.NETHERITE_BOOTS, Enchantments.SOUL_SPEED, 1);
         } else {
-            return Items.LEATHER_BOOTS.getDefaultStack();
+            return asIndicatorItemStack(Items.LEATHER_BOOTS);
         }
     }
 

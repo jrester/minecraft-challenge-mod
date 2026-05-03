@@ -6,10 +6,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.challenge.ChallengeMod;
+import com.challenge.utils.Helpers;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 public abstract class BaseChallenge {
 	public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
@@ -84,10 +90,21 @@ public abstract class BaseChallenge {
 
   public ItemStack getIndicatorItemStack() {
     if(this.isEnabled()) {
-      return Items.LAVA_BUCKET.getDefaultStack();
+      return Items.LAVA_BUCKET.getDefaultInstance();
      } else {
-      return Items.BUCKET.getDefaultStack();
+      return Items.BUCKET.getDefaultInstance();
      }
+  }
+
+  protected ItemStack asIndicatorItemStack(final Item item) {
+    return item.getDefaultInstance();
+  }
+
+  protected ItemStack asEnchantedIndicatorItemStack(final Item item, ResourceKey<Enchantment> enchantment, final int level) {
+    ItemStack itemStack = asIndicatorItemStack(item);
+    Holder.Reference<Enchantment> enchantmentRef = Helpers.getEnchantment(this.getServer(), Enchantments.FORTUNE);
+    itemStack.enchant(enchantmentRef, level);
+    return itemStack;
   }
   
   protected void challengeFinished(boolean success) {

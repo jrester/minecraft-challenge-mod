@@ -3,12 +3,11 @@ package com.challenge.challenges;
 import com.challenge.events.BlockEvents;
 import com.challenge.utils.Helpers;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.ActionResult;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+
 
 public class NoCraftingTableChallenge extends BaseChallenge {
     private final String name = "No Crafting Table";
@@ -16,9 +15,9 @@ public class NoCraftingTableChallenge extends BaseChallenge {
     @Override
     public void registerEventHandlers() {
         BlockEvents.ON_CRAFTING_BLOCK_USE.register((state, world, pos, player, hit) -> {
-            if(!this.isActive()) return ActionResult.PASS;
+            if(!this.isActive()) return InteractionResult.PASS;
 
-            return ActionResult.FAIL;
+            return InteractionResult.FAIL;
         });
     }
 
@@ -28,14 +27,11 @@ public class NoCraftingTableChallenge extends BaseChallenge {
     }
 
     @Override
-    public ItemStack  getIndicatorItemStack() {
+    public ItemStack getIndicatorItemStack() {
         if(isEnabled()) {
-            ItemStack itemStack = Items.CRAFTING_TABLE.getDefaultStack();
-            RegistryEntry<Enchantment> curseOfBinding = Helpers.getEnchantment(this.getServer(), Enchantments.BINDING_CURSE);
-            itemStack.addEnchantment(curseOfBinding, 1);
-            return itemStack;
+            return asEnchantedIndicatorItemStack(Items.CRAFTING_TABLE, Enchantments.BINDING_CURSE, 1);
         } else {
-            return Items.CRAFTING_TABLE.getDefaultStack();
+            return asIndicatorItemStack(Items.CRAFTING_TABLE);
         }
 
     }

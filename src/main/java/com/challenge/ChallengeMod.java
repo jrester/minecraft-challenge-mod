@@ -4,16 +4,15 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.command.permission.PermissionLevel;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,6 @@ import com.challenge.challenges.SlayEnderDragonChallenge;
 import com.challenge.challenges.SlayWardenChallenge;
 import com.challenge.challenges.SlayWitherChallenge;
 import com.challenge.challenges.DeleteBlocksOnBreak;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 
 public class ChallengeMod implements DedicatedServerModInitializer {
@@ -48,15 +46,15 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 
 	private final ChallengeTimeController challengeTimeController = new ChallengeTimeController(LOGGER);
 	private final ChallengeCollection challengeCollection = new ChallengeCollection();
-	private List<ServerPlayerEntity> players = new LinkedList<>();
+	private List<ServerPlayer> players = new LinkedList<>();
 
 
-	public int startChallengeCommand(CommandContext<ServerCommandSource> ctx) {
-		ServerCommandSource source = ctx.getSource();
+	public int startChallengeCommand(CommandContext<CommandSourceStack> ctx) {
+		CommandSourceStack source = ctx.getSource();
 
 
 		startChallenge();
-		source.sendFeedback(() -> Text.of("Challenge started"), false);
+		source.sendSuccess(() -> Component.literal("Challenge started"), true);
 
 		return 1;
 	}
@@ -66,10 +64,10 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		this.challengeTimeController.start();
 	}
 	
-	public int stopChallengeCommand(CommandContext<ServerCommandSource> ctx) {
-		ServerCommandSource source = ctx.getSource();
+	public int stopChallengeCommand(CommandContext<CommandSourceStack> ctx) {
+		CommandSourceStack source = ctx.getSource();
 		stopChallenge(true);
-		source.sendFeedback(() -> Text.of("Challenge stopped"), false);
+		source.sendSuccess(() -> Component.literal("Challenge stopped"), true);
 		return 1;
 	}
 
@@ -78,26 +76,30 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		this.challengeTimeController.stop();
 
 		String elapsedTime = this.challengeTimeController.getElapsedTimeFormated();
-		Text message;
+		MutableComponent message;
 		if (success) {
-				message = Text.literal(String.format("You completed the challenge! Your final time is: %s", elapsedTime)).setStyle(Style.EMPTY.withColor(TextColor.parse("green").getOrThrow()).withBold(true));
+				TextColor green = TextColor.parseColor("green").getOrThrow();
+				message = Component.literal(String.format("You completed the challenge! Your final time is: %s", elapsedTime));
+				message = message.setStyle(Style.EMPTY.withColor(green).withBold(true));
 		} else {
-				message = Text.literal(String.format("You failed to complete the challenge! Your final time is: %s", elapsedTime)).setStyle(Style.EMPTY.withColor(TextColor.parse("red").getOrThrow()).withBold(true));
+				TextColor red = TextColor.parseColor("red").getOrThrow();
+				message = Component.literal(String.format("You failed to complete the challenge! Your final time is: %s", elapsedTime));
+				message = message.setStyle(Style.EMPTY.withColor(red).withBold(true));
 		}
 		
-		for (ServerPlayerEntity player : this.players) {
-			player.sendMessage(message);
+		for (ServerPlayer player : this.players) {
+			player.sendSystemMessage(message);
 		}
 		
 	}
 
-	public int pauseChallengeCommand(CommandContext<ServerCommandSource> ctx) {
-    ServerCommandSource source = ctx.getSource();
+	public int pauseChallengeCommand(CommandContext<CommandSourceStack> ctx) {
+		CommandSourceStack source = ctx.getSource();
 
-    pauseChallenge();
-    source.sendFeedback(() -> Text.of("Challenge paused"), false);
+		pauseChallenge();
+		source.sendSystemMessage(Component.literal("Challenge paused"));
 
-    return 1;
+		return 1;
 	}
 
 	public void pauseChallenge() {
@@ -107,12 +109,12 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		this.challengeTimeController.pause();
 	}
 
-	public int resumeChallengeCommand(CommandContext<ServerCommandSource> ctx) {
-    ServerCommandSource source = ctx.getSource();
+	public int resumeChallengeCommand(CommandContext<CommandSourceStack> ctx) {
+    CommandSourceStack source = ctx.getSource();
 
     this.resumeChallenge();
 
-    source.sendFeedback(() -> Text.of("Challenge resumed"), false);
+    source.sendSuccess(() -> Component.literal("Challenge resumed"), true);
 
     return 1;
 	}
@@ -124,11 +126,16 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		this.challengeTimeController.resume();
 	}
 
-	public int configChallengeCommand(CommandContext<ServerCommandSource> ctx) {
-		ServerCommandSource source = ctx.getSource();
-		ServerPlayerEntity player = source.getPlayer();
+	public int configChallengeCommand(CommandContext<CommandSourceStack> ctx) {
+		CommandSourceStack source = ctx.getSource();
+		ServerPlayer player = source.getPlayer();
 
-		player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new ChallengeConfigManager(syncId, playerInventory, this.challengeCollection), Text.of("Challenge Config")));	
+		player.openMenu(new SimpleMenuProvider(
+				(containerId, inventory, p) -> new ChallengeConfigManager(containerId, inventory, p, this.challengeCollection),
+				Component.literal("Challenge Config")
+			)
+		);
+
 		
 		return 1;
 	}
@@ -147,13 +154,13 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 	public void onInitializeServer() {	
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			ServerPlayerEntity newPlayer = handler.getPlayer();
+			ServerPlayer newPlayer = handler.getPlayer();
 			this.players.add(newPlayer);
 			this.challengeTimeController.addPlayer(newPlayer);
 		});
 
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-			ServerPlayerEntity oldPlayer = handler.getPlayer();
+			ServerPlayer oldPlayer = handler.getPlayer();
 			this.players.remove(oldPlayer);
 			this.challengeTimeController.removePlayer(oldPlayer);
 		});
@@ -176,13 +183,15 @@ public class ChallengeMod implements DedicatedServerModInitializer {
 		
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(
-				CommandManager.literal("challenge")
+				Commands.literal("challenge")
+					// If the command does not have a permission check, the mod initialization fails on the  prod server.
+					// Not sure why it is required, but this noop fixes it...
 					.requires(source -> true)
-					.then(CommandManager.literal("config").executes(this::configChallengeCommand))
-					.then(CommandManager.literal("start").executes(this::startChallengeCommand))
-					.then(CommandManager.literal("stop").executes(this::stopChallengeCommand))
-					.then(CommandManager.literal("pause").executes(this::pauseChallengeCommand))
-					.then(CommandManager.literal("resume").executes(this::resumeChallengeCommand))
+					.then(Commands.literal("config").executes(this::configChallengeCommand))
+					.then(Commands.literal("start").executes(this::startChallengeCommand))
+					.then(Commands.literal("stop").executes(this::stopChallengeCommand))
+					.then(Commands.literal("pause").executes(this::pauseChallengeCommand))
+					.then(Commands.literal("resume").executes(this::resumeChallengeCommand))
 			);
 		});
 	}

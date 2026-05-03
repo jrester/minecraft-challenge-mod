@@ -1,24 +1,22 @@
 package com.challenge.challenges;
 
-import com.challenge.utils.Helpers;
 import com.challenge.utils.MobScrambler;
 
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+
 
 public class ScrambledMobsOnDamageChallenge extends AbstractMobsOnDamageChallenge {
     private final String name = "Scrambled Mobs on Damage";
     private final MobScrambler mobScrambler = new MobScrambler();
 
     @Override
-    protected EntityType getMob(LivingEntity victim, PlayerEntity player) {
+    protected EntityType getMob(LivingEntity victim, Player player) {
         int victimTypeHash = Math.abs(victim.getType().hashCode());
         return this.mobScrambler.getScrambledForPlayer(victimTypeHash, player, this.getServer());
     }
@@ -31,12 +29,9 @@ public class ScrambledMobsOnDamageChallenge extends AbstractMobsOnDamageChalleng
     @Override
     public ItemStack getIndicatorItemStack() {
         if(isEnabled()) {
-            ItemStack itemStack = Items.SPAWNER.getDefaultStack();
-            RegistryEntry<Enchantment> fortune = Helpers.getEnchantment(this.getServer(), Enchantments.FORTUNE);
-            itemStack.addEnchantment(fortune, 3);
-            return itemStack;
+            return asEnchantedIndicatorItemStack(Items.SPAWNER, Enchantments.FORTUNE, 3);
         } else {
-            return Items.SPAWNER.getDefaultStack();
+            return asIndicatorItemStack(Items.SPAWNER);
         }
     }
     

@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
 
 public abstract class Scrambler<T> {
     protected Random random = new Random();
     private Map<String, Integer> playerModifiers = new HashMap<>();
 
-    protected int getModifierForPlayer(PlayerEntity player) {
-        String uuid = player.getUuidAsString();
+    protected int getModifierForPlayer(Player player) {
+        String uuid = player.getStringUUID();
         int modifier;
         if(!playerModifiers.containsKey(uuid)) {
             modifier = Math.abs(this.random.nextInt());
@@ -23,5 +23,5 @@ public abstract class Scrambler<T> {
         return modifier;
     }
     
-    abstract public T getScrambledForPlayer(int itemModifier, PlayerEntity player, MinecraftServer server);
+    abstract public T getScrambledForPlayer(int itemModifier, Player player, MinecraftServer server);
 }

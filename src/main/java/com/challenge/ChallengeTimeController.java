@@ -1,9 +1,5 @@
 package com.challenge;
 
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -13,10 +9,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.server.level.ServerPlayer;
+
 class ChallengeTimeController {
     private final Logger LOGGER;
   
-	private List<ServerPlayerEntity> players = new LinkedList<>();
+	private List<ServerPlayer> players = new LinkedList<>();
 	private ScheduledThreadPoolExecutor executor;
 	private ScheduledFuture<?> timer;
 
@@ -29,29 +30,29 @@ class ChallengeTimeController {
 
   	class ChallengeTimer implements Runnable {
     	public void run() {
-    		TextColor red = TextColor.parse("red").getOrThrow();
-    		Text message;
-    	  if(paused) {
-    	    message = Text.literal("Challenge Paused").setStyle(Style.EMPTY.withColor(red));
-    	  } else {
-      		long currentTime = System.currentTimeMillis();
-      		long elapsedTime = currentTime - startTime + alreadyElapsed;
-    	    String timeFormated = ChallengeTimeController.formatElapsedTime(elapsedTime);
-      		message = Text.literal(timeFormated).setStyle(Style.EMPTY.withColor(red).withBold(true));
-      	}
-    		for (ServerPlayerEntity player : players) {
-    			player.sendMessage(message, true);
-    		}
-      }
+			TextColor red = TextColor.parseColor("red").getOrThrow();
+			Component message;
+			if(paused) {
+				message = Component.literal("Challenge Paused").setStyle(Style.EMPTY.withColor(red));
+			} else {
+				long currentTime = System.currentTimeMillis();
+				long elapsedTime = currentTime - startTime + alreadyElapsed;
+				String timeFormated = ChallengeTimeController.formatElapsedTime(elapsedTime);
+				message = Component.literal(timeFormated).setStyle(Style.EMPTY.withColor(red).withBold(true));
+			}
+			for (ServerPlayer player : players) {
+				player.sendOverlayMessage(message);
+			}
+		}
   	}
 
-  	public void addPlayer(ServerPlayerEntity player) {
+  	public void addPlayer(ServerPlayer player) {
   	  if (!this.players.contains(player)) {
     	  this.players.add(player);
   	  }
   	}
 
-  	public void removePlayer(ServerPlayerEntity player) {
+  	public void removePlayer(ServerPlayer player) {
   	  if (!this.players.contains(player)) {
     	  this.players.remove(player);
   	  }

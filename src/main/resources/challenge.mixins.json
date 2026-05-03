@@ -7,8 +7,8 @@
 		"LivingEntityMixin",
 		"BlockMixin",
 		"CraftingTableBlockMixin",
-		"PlayerEntityMixin",
-		"ServerWorldMixin"
+		"PlayerMixin",
+		"ServerLevelMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

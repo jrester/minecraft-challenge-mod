@@ -7,20 +7,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.challenge.events.BlockEvents;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CraftingTableBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CraftingTableBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 @Mixin(CraftingTableBlock.class)
 public class CraftingTableBlockMixin {
-    @Inject(at = @At(value = "HEAD"), method = "onUse", cancellable = true)
-    public void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit, CallbackInfoReturnable<ActionResult> info) {
-        ActionResult result = BlockEvents.ON_CRAFTING_BLOCK_USE.invoker().onCraftingBlockUse(state, world, pos, player, hit);
-        if(result == ActionResult.FAIL) {
+    @Inject(at = @At(value = "HEAD"), method = "useWithoutItem", cancellable = true)
+    public void onUse(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> info) {
+        InteractionResult result = BlockEvents.ON_CRAFTING_BLOCK_USE.invoker().onCraftingBlockUse(state, level, pos, player, hit);
+        if(result == InteractionResult.FAIL) {
             info.setReturnValue(result);
         }
     } 

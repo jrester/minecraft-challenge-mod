@@ -2,9 +2,9 @@ package com.challenge.utils;
 
 import java.util.List;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 
 public class MobScrambler extends Scrambler<EntityType> {
   private final List<EntityType> allEntityTypes;
@@ -14,7 +14,7 @@ public class MobScrambler extends Scrambler<EntityType> {
   }
 
 	@Override
-	public EntityType getScrambledForPlayer(int itemModifier, PlayerEntity player, MinecraftServer server) {
+	public EntityType getScrambledForPlayer(int itemModifier, Player player, MinecraftServer server) {
 	  int playerModifier = this.getModifierForPlayer(player);
     // TODO: Cap by mob index
     int totalModifier = Math.abs(itemModifier + playerModifier);

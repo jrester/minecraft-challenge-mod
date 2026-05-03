@@ -1,50 +1,53 @@
 package com.challenge;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ShulkerBoxScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ChallengeConfigManager extends ShulkerBoxScreenHandler {
+import com.challenge.challenges.BaseChallenge;
 
-  private ChallengeCollection inventory;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-  public ChallengeConfigManager(int syncId, PlayerInventory playerInventory, ChallengeCollection inventory) {
-    super(syncId, playerInventory, inventory);
-    this.inventory = inventory;
+public class ChallengeConfigManager extends AbstractContainerMenu {
+  private static final int COLUMNS = 9;
+  private static final int ROWS = 6;
+	public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
+
+
+  private Inventory inventory;
+  private ChallengeCollection challengeCollection;
+
+  public ChallengeConfigManager(int containerId, Inventory Inventory, Player player, ChallengeCollection challengeCollection) {
+    super(MenuType.GENERIC_9x6, containerId);
+    this.challengeCollection = challengeCollection;
+
+    this.addChallengeGrid();
   }
 
-  public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-    // When the player is dragging items the slotIndex is -999...
-    if(slotIndex >= 0) {
-      Slot slot = this.slots.get(slotIndex);
+	private void addChallengeGrid() {
+		for (int i = 0; i < COLUMNS * ROWS; i++) {
+      int x = i % COLUMNS;
+      int y = (int)(i / COLUMNS);
+      this.addSlot(new ChallengeSlot(challengeCollection, i, x, y));
+		}
+	}
 
-      // Make sure that the player is interacting with the challenge inventory
-      if(slot.inventory.equals(this.inventory)) {
-        // Not all slots in the challenge collection inventory might be filled with challenges
-        if(this.inventory.getStack(slotIndex) != ItemStack.EMPTY) {
-          this.inventory.toggleChallenge(slotIndex);
-        }
-        return;
-      }
-    }
-    // If the player did not perform any challenge configuration, they are clicking around in their inventory
-    // Those actions are still allowed, therefore they are passed to the default implementation
-    super.onSlotClick(slotIndex, button, actionType, player); 
+	@Override
+	public boolean stillValid(final Player player) {
+		return true;
+	}
+
+
+  @Override
+	public ItemStack quickMoveStack(final Player player, final int slotIndex) {
+    return ItemStack.EMPTY;
   }
 
-  public boolean canInsertIntoSlot(Slot slot) {
-    return slot.inventory.equals(this.inventory) ? false : super.canInsertIntoSlot(slot);
-  }
-
-  public ItemStack quickMove(PlayerEntity player, int slot) {
-    return null;
-    
-  }
-
-  public boolean canUse(PlayerEntity player) {
+  public boolean canUse(Player player) {
     return true;
   }
 }

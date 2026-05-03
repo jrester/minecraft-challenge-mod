@@ -2,10 +2,11 @@ package com.challenge.challenges;
 
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.GameMode;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 
 public class HardcoreChallenge extends BaseChallenge {
   private final String name = "Hardcore";
@@ -15,11 +16,11 @@ public class HardcoreChallenge extends BaseChallenge {
   public void registerEventHandlers() {
     ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
       if(!this.isActive()) return;
-      if (!entity.isPlayer()) return;
+      if (!(entity instanceof Player)) return;
 
-      for(ServerPlayerEntity player : this.getServer().getPlayerManager().getPlayerList()) {
-        player.kill(player.getEntityWorld());
-        player.changeGameMode(GameMode.SPECTATOR);
+      for(ServerPlayer player : this.getServer().getPlayerList().getPlayers()) {
+        player.kill(player.level());
+        player.setGameMode(GameType.SPECTATOR);
       }
 
       this.challengeFinished(false);
@@ -34,9 +35,9 @@ public class HardcoreChallenge extends BaseChallenge {
   @Override
   public ItemStack getIndicatorItemStack() {
     if(this.isEnabled()) {
-      return Items.ENCHANTED_GOLDEN_APPLE.getDefaultStack();
+      return asIndicatorItemStack(Items.ENCHANTED_GOLDEN_APPLE);
     } else {
-      return Items.APPLE.getDefaultStack();
+      return asIndicatorItemStack(Items.APPLE);
     }
   }
 }

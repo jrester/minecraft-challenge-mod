@@ -2,21 +2,19 @@ package com.challenge.challenges;
 
 
 import com.challenge.events.LivingEntityEvents;
-import com.challenge.utils.Helpers;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+
 
 public abstract class AbstractMobDropsChallenge extends BaseChallenge {
-    protected abstract ItemStack getItem(World world, PlayerEntity player, LivingEntity victim);
+    protected abstract ItemStack getItem(Level level, Player player, LivingEntity victim);
     
   @Override
   public void registerEventHandlers() {
@@ -24,20 +22,18 @@ public abstract class AbstractMobDropsChallenge extends BaseChallenge {
       try{
         if(!this.isActive()) return false;
         if(!causedByPlayer) return false;
-        Entity attacker = damageSource.getAttacker();
+        Entity attacker = damageSource.getEntity();
         if(attacker == null) return false;
         // Even though causedByPlayer is true, it might not always be the case that the damageSource is also a player...
         // Probably happens in some cases, when e.g. creepers blow up other mobs.
-        if(!attacker.isPlayer()) return false;
-        // Just to be extra sure...
-        if(!(attacker instanceof PlayerEntity)) return false;
+        if(!(attacker instanceof Player)) return false;
 
-        PlayerEntity player = (PlayerEntity) attacker;
+        Player player = (Player) attacker;
 
-        ItemStack itemStack = this.getItem(player.getEntityWorld(), player, victim);
-        ItemEntity itemEntity = new ItemEntity(victim.getEntityWorld(), victim.getX(), victim.getY(), victim.getZ(), itemStack);
-        itemEntity.setToDefaultPickupDelay();
-        victim.getEntityWorld().spawnEntity(itemEntity);
+        ItemStack itemStack = this.getItem(player.level(), player, victim);
+        ItemEntity itemEntity = new ItemEntity(victim.level(), victim.getX(), victim.getY(), victim.getZ(), itemStack);
+        itemEntity.setDefaultPickUpDelay();
+        victim.level().addFreshEntity(itemEntity);
 
         // Event is fully processed. Don't drop default item.
         // TODO: This means, that we cannot have two instances of the this challenge running.
@@ -53,12 +49,9 @@ public abstract class AbstractMobDropsChallenge extends BaseChallenge {
   @Override
   public ItemStack getIndicatorItemStack() {
     if(this.isEnabled()) {
-      ItemStack itemStack = Items.NETHERITE_SWORD.getDefaultStack();
-      RegistryEntry<Enchantment> looting = Helpers.getEnchantment(this.getServer(), Enchantments.LOOTING);
-      itemStack.addEnchantment(looting, 3);
-      return itemStack;
+      return asEnchantedIndicatorItemStack(Items.NETHERITE_SWORD, Enchantments.LOOTING, 3);
     } else {
-      return Items.WOODEN_SWORD.getDefaultStack();
+      return asIndicatorItemStack(Items.WOODEN_SWORD);
     }
   }
 }

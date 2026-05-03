@@ -3,41 +3,83 @@ package com.challenge;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.challenge.challenges.BaseChallenge;
 
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Unit;
 
-public class ChallengeCollection extends SimpleInventory {
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+public class ChallengeCollection implements Container {
+		public static final Logger LOGGER = LoggerFactory.getLogger(ChallengeMod.MOD_ID);
+
 		private List<BaseChallenge> challenges = new LinkedList<>();
+		private List<ItemStack> slots = new LinkedList<>();
+
 		private boolean running = false;
 
-		public ChallengeCollection() {
-		  super(36);
+		public int getContainerSize() {
+			return 36;
 		}
 
+		public boolean isEmpty() {
+			return false;
+		}
+
+		public ItemStack getItem(int slot) {	
+			if(slot >= this.slots.size()) {
+				return ItemStack.EMPTY;
+			}
+
+			return this.slots.get(slot);
+		}
+
+		public ItemStack removeItem(int slot, int count) {
+			this.toggleChallenge(slot);
+			return ItemStack.EMPTY;
+		}
+
+		public ItemStack removeItemNoUpdate(int slot) {
+			this.toggleChallenge(slot);
+			return ItemStack.EMPTY;
+		}
+
+		public void setItem(int slot, ItemStack itemStack) {
+		}
+
+		public ChallengeCollection() {
+		}
+
+		public void clearContent() {
+			return;
+		}
+
+
 		public void addChallenge(BaseChallenge challenge) {
-		  this.challenges.add(challenge);
-		  ItemStack newItemStack = getItemStackForChallenge(challenge, false);
-		  this.addStack(newItemStack);
+			LOGGER.info("Adding challenge: " + challenge.getName());
+			this.challenges.add(challenge);
+			ItemStack newItemStack = getItemStackForChallenge(challenge, false);
+			this.slots.add(newItemStack);
 		}
 
 		private ItemStack getItemStackForChallenge(BaseChallenge challenge, boolean enabled) {
 			ItemStack newItemStack = challenge.getIndicatorItemStack();
-			MutableText name = Text.literal(challenge.getName());
+			MutableComponent name = Component.literal(challenge.getName());
 			if(enabled) {
-				name.setStyle(Style.EMPTY.withColor(TextColor.parse("green").getOrThrow()).withBold(true));	
+				name.setStyle(Style.EMPTY.withColor(TextColor.parseColor("green").getOrThrow()).withBold(true));
 			} else {
-				name.setStyle(Style.EMPTY.withColor(TextColor.parse("red").getOrThrow()).withBold(false));	
+				name.setStyle(Style.EMPTY.withColor(TextColor.parseColor("red").getOrThrow()).withBold(false));	
 		  	}	
 			// newItemStack.set(DataComponentTypes.TOOLTIP_DISPLAY, Unit.INSTANCE);
-			newItemStack.set(DataComponentTypes.ITEM_NAME, name);
+			newItemStack.set(DataComponents.CUSTOM_NAME, name);
 			return newItemStack;
 		}
 
@@ -50,7 +92,7 @@ public class ChallengeCollection extends SimpleInventory {
 				if(running) challenge.start();
 			}
 			ItemStack newItemStack = getItemStackForChallenge(this.challenges.get(slotIndex), challenge.isEnabled());
-			this.setStack(slotIndex, newItemStack);
+			this.slots.set(slotIndex, newItemStack);
 		}
 		
 		public List<BaseChallenge> getEnabledChallenges() {
@@ -75,5 +117,21 @@ public class ChallengeCollection extends SimpleInventory {
 				challenge.stop();
 			}
 			this.running = false;
+		}
+		
+		public void setChanged() {
+			return;
+		}
+
+		public boolean stillValid(Player player) {
+			return true;
+		}
+
+		public int size() {
+			return this.challenges.size();
+		}
+
+		public BaseChallenge getChallenge(int idx) {
+			return this.challenges.get(idx);
 		}
 	}
